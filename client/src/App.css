@@ -1,42 +1,104 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+#app-root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-root {
+  display: flex;
+  min-height: 100vh;
+  background: #f2f2f2;
+  color: #222;
+  justify-content: center; /* center the whole layout in the viewport */
+  padding: 1rem 0; /* small vertical padding */
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* ensure the page background matches the app so there is no dark band */
+body {
+  background: #f2f2f2 !important;
+}
+
+.sidebar {
+  width: 220px;
+  background: #174c3b; /* deep green */
+  color: #fff;
+  padding: 1.5rem 1rem;
+  box-shadow: 2px 0 0 rgba(0,0,0,0.04) inset;
+}
+.sidebar .brand {
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+}
+.sidebar ul{ list-style:none; padding:0; margin:0 }
+.sidebar li{ display:flex; gap:0.75rem; align-items:center; padding:0.7rem 0.25rem; border-radius:6px; cursor:pointer }
+.sidebar li.active{ background: rgba(255,255,255,0.06); }
+.sidebar li span{ font-size:0.95rem }
+
+/* On large screens make the sidebar fixed to the viewport edge and offset the main content */
+@media (min-width: 1100px) {
+  .sidebar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow: auto;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.06);
   }
-  to {
-    transform: rotate(360deg);
-  }
+  .app-root{ justify-content: flex-start; }
+  /* leave room for the fixed sidebar and center the container */
+  .main{ margin-left: 220px; align-items: center; }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.main {
+  flex:1; display:flex; flex-direction:column;
 }
 
-.card {
-  padding: 2em;
+.container{
+  max-width:980px;
+  width:100%;
+  margin:0 auto;
+  padding:0 1rem;
 }
 
-.read-the-docs {
-  color: #888;
+.topbar{
+  display:flex; justify-content:space-between; align-items:center; padding:1rem 1.5rem; background:transparent;
+}
+.topbar .search{ display:flex; align-items:center; gap:0.5rem }
+.topbar input{ padding:0.5rem 0.75rem; border-radius:6px; border:1px solid #ddd }
+
+.content{ display:flex; gap:1.25rem; padding:0 0 1.5rem }
+.feed{ flex:1; max-width:780px }
+.rightbar{ width:300px }
+
+.card{ background:#fff; border-radius:8px; padding:1rem; margin-bottom:1rem; box-shadow:0 1px 0 rgba(0,0,0,0.06) }
+
+.create-post .title{ width:100%; padding:0.6rem; margin:0.5rem 0; border:1px solid #e6e6e6; border-radius:6px }
+.create-post .body{ width:100%; min-height:80px; padding:0.6rem; border:1px solid #e6e6e6; border-radius:6px }
+.create-post .controls{ display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem }
+.create-post .controls .left{ display:flex; gap:0.5rem; align-items:center }
+.create-post .post-btn{ background:#1f5d47;color:#fff;border:none;padding:0.5rem 0.9rem;border-radius:6px }
+
+.post{ padding:0.9rem }
+.post-header{ display:flex; gap:0.75rem; align-items:flex-start }
+.avatar{ width:40px; height:40px; border-radius:50%; background:#ddd; display:flex; align-items:center; justify-content:center }
+.meta .author{ color:#666; font-size:0.9rem }
+.meta h4{ margin:0.35rem 0 0; }
+.post-body{ margin:0.6rem 0 }
+.post-actions{ color:#666; font-size:0.9rem }
+
+.rightbar .widget{ padding:0.75rem }
+.rightbar .trending ul{ list-style:none; padding:0; margin:0 }
+.rightbar .trending li{ padding:0.5rem 0; border-bottom:1px solid #f1f1f1 }
+
+/* Responsive behavior: */
+@media (max-width: 1100px){
+  /* hide left sidebar on narrower screens to give space */
+  .sidebar{ display:none }
+  /* right column stacks under feed */
+  .content{ flex-direction:column }
+  .rightbar{ width:100% }
+}
+
+@media (max-width: 600px){
+  .topbar input{ width:120px }
+  .create-post .body{ min-height:100px }
 }
