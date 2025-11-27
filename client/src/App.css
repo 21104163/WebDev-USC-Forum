@@ -10,7 +10,7 @@
   left:0;
   right:0;
 
-  background-color: rgba(77, 237, 218, 0.267);
+  background-color: rgba(77, 237, 218, 1);
   font-family: sans-serif;
   font-size: 1.5rem;
   font-weight: bold;
@@ -57,6 +57,7 @@
 /*createPost CSS*/
 
 .iPost{
+  width:100vw;
   align-self: center;
   display: flex;
   flex-direction: column;
@@ -64,10 +65,11 @@
   justify-content: center;
   border-style: dashed;
   border-color: aliceblue;
+  padding:0;
 }
 .post-form{
   width: 50%;
-  margin: 10% auto 0 auto;
+  margin: 0;
   padding: 2%;
   border: 1px solid lightgray;
   border-radius: 5px;

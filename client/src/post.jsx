@@ -7,7 +7,7 @@ export function PostCreate() {
             <label for="title">Title:</label>
             <input type ="text" placeholder="Post Title" id="title"/>
             <label for="content">Content:</label>
-            <input type ="text" placeholder="What's on your mind?" id ="content"/>
+            <textarea placeholder="What's on your mind?" id ="content" rows ="12"/>
             <button type="submit">Post</button>
         </form>
     </div>
