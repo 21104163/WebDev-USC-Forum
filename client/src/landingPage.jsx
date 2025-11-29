@@ -1,4 +1,7 @@
 import './landingPage.css'
+import { useState } from "react";
+import LogIn from './landingPage_components/logIn.jsx'
+import SignUp from './landingPage_components/signUp.jsx'
 
 function Sidebar() {
   return (
@@ -13,7 +16,8 @@ function Sidebar() {
   )
 }
 
-function Topbar() {
+function Topbar({onLoginClick, onSignUpClick}) {
+    
   return (
     <header className="topbar fullwidth">
       <div className="left">
@@ -25,8 +29,8 @@ function Topbar() {
       </div>
 
       <div className="auth-buttons">
-        <button className="login-btn">Login</button>
-        <button className="signup-btn">Sign Up</button>
+        <button className="login-btn" onClick={onLoginClick}>Login</button>
+        <button className="signup-btn" onClick={onSignUpClick}>Sign Up</button>
       </div>
     </header>
   );
@@ -74,12 +78,19 @@ function RightSidebar() {
 }
 
 export default function LandingPage() {
+
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignUpOpen, setSignUpOpen] = useState(false);
+
   return (
     <div className="app-root">
-        <Sidebar />
+      <Sidebar />
+
       <div className="main">
-        {/* <Sidebar /> */}
-        <Topbar />
+        <Topbar 
+        onLoginClick={() => setIsLoginOpen(true)}
+        onSignUpClick={() => setSignUpOpen(true)} 
+        />
         <div className="container">
           <div className="content">
             <div className="feed">
@@ -90,6 +101,8 @@ export default function LandingPage() {
           </div>
         </div>
       </div>
+        <LogIn isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+        <SignUp isOpen={isSignUpOpen} onClose={() => setSignUpOpen(false)} />
     </div>
   )
 }
