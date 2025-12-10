@@ -2,13 +2,14 @@ import './landingPage.css'
 import { useState } from "react";
 import LogIn from './landingPage_components/logIn.jsx'
 import SignUp from './landingPage_components/signUp.jsx'
+import uscLogo from './assets/USC_university_seal.svg.png';
 
 function Sidebar() {
   return (
     <aside className="sidebar">
       <nav>
         <ul>
-          <li className="active">🏠 <span>Home</span></li>
+          <li>🏠 <span>Home</span></li>
           <li>📢 <span>Announcements</span></li>
         </ul>
       </nav>
@@ -21,8 +22,11 @@ function Topbar({onLoginClick, onSignUpClick}) {
   return (
     <header className="topbar fullwidth">
       <div className="left">
-        <div className="brand">USC Forum</div>
-        
+        <img src={uscLogo} alt="uscLogo" ></img>
+        <ul className="brand">
+          <li>University of San Carlos</li>
+          <li class="bigFont">Forum</li>
+        </ul>
         <div className="search">
           🔍 <input placeholder="Search..." />
         </div>
@@ -88,8 +92,8 @@ export default function LandingPage() {
 
       <div className="main">
         <Topbar 
-        onLoginClick={() => setIsLoginOpen(true)}
-        onSignUpClick={() => setSignUpOpen(true)} 
+          onLoginClick={() => setIsLoginOpen(true)}
+          onSignUpClick={() => setSignUpOpen(true)} 
         />
         <div className="container">
           <div className="content">

@@ -13,7 +13,11 @@ body {
 .app-root {
   display: flex;
   min-height: 100vh;
-  background: #f2f2f2;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  background-image: url('.\assets\University-of-San-Carlos-background.jpg');
   color: #222;
 }
 
@@ -26,7 +30,7 @@ body {
   color: #fff;
   padding: 1.5rem 1rem;
   box-shadow: 2px 0 0 rgba(0,0,0,0.04) inset;
-  padding-top: 5rem;
+  padding-top: 8rem;
 }
 
 .sidebar .brand {
@@ -50,8 +54,8 @@ body {
   cursor: pointer;
 }
 
-.sidebar li.active {
-  background: rgba(255,255,255,0.06);
+.sidebar li:hover{
+  background-color: #8383836b;
 }
 
 .sidebar li span {
@@ -110,7 +114,7 @@ body {
   width: 100%;
   background: #174c3b;
   color: white;
-  padding: 1rem 1.5rem;
+  padding: 0rem 1.5rem;
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
@@ -118,6 +122,11 @@ body {
   position: sticky;
   /* top: -10px; */
   z-index: 10;
+}
+
+.topbar .left img{
+  width: 5%;
+  max-width: 100%;
 }
 
 .topbar .left {
@@ -129,6 +138,14 @@ body {
 .topbar .brand {
   font-size: 1.2rem;
   font-weight: 700;
+  list-style-type: none;
+  padding: 0;
+}
+.topbar .brand li{
+  line-height: 1em;
+}
+.topbar .brand .bigFont{
+  font-size: 55px;
 }
 
 .topbar .search {
@@ -146,6 +163,15 @@ body {
 /* -------------------------------------------------------
    Buttons (Login / Sign Up)
 ------------------------------------------------------- */
+.login-btn:hover{
+  background-color: #fff;
+  color:#174c3b;
+}
+.signup-btn:hover{
+  background-color: #fff;
+  color:#174c3b;
+}
+
 .auth-buttons {
   display: flex;
   gap: 0.75rem;
@@ -160,15 +186,10 @@ body {
   border: none;
 }
 
-.login-btn {
+.login-btn,.signup-btn {
   background: transparent;
   border: 1px solid #fff;
   color: #fff;
-}
-
-.signup-btn {
-  background: #fff;
-  color: #174c3b;
 }
 
 /* -------------------------------------------------------
