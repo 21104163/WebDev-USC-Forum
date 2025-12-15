@@ -16,6 +16,7 @@
   font-weight: bold;
   padding-left: .5rem;
 }
+<<<<<<< Updated upstream
 
 .container img{
   height: 2rem;
@@ -23,13 +24,21 @@
   padding-bottom:1rem ;
 }
 
+=======
+>>>>>>> Stashed changes
 .search-form{
   width: 50%;
   border-radius: 5px;
   background-color: white;
   justify-content: center;
   padding: auto 2%;
+<<<<<<< Updated upstream
   margin-left:15%
+=======
+  margin-left:15%;
+  align-items: center;
+  justify-content: center;
+>>>>>>> Stashed changes
 }
 
 .search-form input{
@@ -48,6 +57,7 @@
   background:transparent;
   color:gray;
   border: none;
+<<<<<<< Updated upstream
   border-radius: 100%;
   cursor: pointer;
   font-size: 80%;
@@ -56,6 +66,12 @@
 
 /*createPost CSS*/
 
+=======
+  cursor: pointer;
+  font-size: 80%;
+  width: 20%;
+}
+>>>>>>> Stashed changes
 .iPost{
   width:100vw;
   align-self: center;
