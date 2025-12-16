@@ -2,6 +2,8 @@ import { useState } from 'react'
 import './loginSignup.css'
 import bg from '../assets/University-of-San-Carlos-background.jpg'
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
+
 export default function ForgotPassword({ onDone, onCancel }) {
   const [step, setStep] = useState(1)
   const [email, setEmail] = useState('')
@@ -25,13 +27,15 @@ export default function ForgotPassword({ onDone, onCancel }) {
       return
     }
     try {
-      const res = await fetch('/api/auth/forgot-password/send-code', {
+      const res = await fetch(`${API_BASE}/auth/forgot-password/send-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || 'Failed')
+      const text = await res.text()
+      let data = null
+      try { data = text ? JSON.parse(text) : null } catch (e) { data = null }
+      if (!res.ok) throw new Error((data && data.message) || text || 'Failed')
       setStep(2)
       setMessage('Code sent')
     } catch (err) {
@@ -60,13 +64,15 @@ export default function ForgotPassword({ onDone, onCancel }) {
     }
     setPasswordError('')
     try {
-      const res = await fetch('/api/auth/forgot-password/reset', {
+      const res = await fetch(`${API_BASE}/auth/forgot-password/reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code, newPassword: password })
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || 'Reset failed')
+      const text = await res.text()
+      let data = null
+      try { data = text ? JSON.parse(text) : null } catch (e) { data = null }
+      if (!res.ok) throw new Error((data && data.message) || text || 'Reset failed')
       setMessage('Password reset successful')
       onDone()
     } catch (err) {
@@ -93,10 +99,12 @@ export default function ForgotPassword({ onDone, onCancel }) {
               const uscRe = /^[^\s@]+@usc\.edu(\.ph)?$/i
               if (!email || !uscRe.test(email)) return
               try {
-                const res = await fetch(`/api/auth/check-email?email=${encodeURIComponent(email)}`)
-                const data = await res.json()
-                if (!res.ok) throw new Error(data.message || 'Check failed')
-                if (!data.exists) setEmailError('Email not found in our records')
+                  const res = await fetch(`${API_BASE}/auth/check-email?email=${encodeURIComponent(email)}`)
+                  const text = await res.text()
+                  let data = null
+                  try { data = text ? JSON.parse(text) : null } catch (e) { data = null }
+                  if (!res.ok) throw new Error((data && data.message) || text || 'Check failed')
+                  if (!data.exists) setEmailError('Email not found in our records')
               } catch (err) {
                 console.error('Email check error', err)
               }

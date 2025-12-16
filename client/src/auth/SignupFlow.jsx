@@ -2,6 +2,8 @@ import { useState } from 'react'
 import './loginSignup.css'
 import bg from '../assets/University-of-San-Carlos-background.jpg'
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
+
 export default function SignupFlow({ onSignupSuccess, onCancel }) {
   const [step, setStep] = useState(1)
   const [email, setEmail] = useState('')
@@ -26,13 +28,15 @@ export default function SignupFlow({ onSignupSuccess, onCancel }) {
     }
     setEmailError('')
     try {
-      const res = await fetch('/api/auth/send-code', {
+      const res = await fetch(`${API_BASE}/auth/send-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || 'Failed')
+      const text = await res.text()
+      let data = null
+      try { data = text ? JSON.parse(text) : null } catch (e) { data = null }
+      if (!res.ok) throw new Error((data && data.message) || text || 'Failed')
       setStep(2)
       setMessage('Code sent')
     } catch (err) {
@@ -47,13 +51,15 @@ export default function SignupFlow({ onSignupSuccess, onCancel }) {
       return
     }
     try {
-      const res = await fetch('/api/auth/verify-code', {
+      const res = await fetch(`${API_BASE}/auth/verify-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code })
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || 'Invalid code')
+      const text = await res.text()
+      let data = null
+      try { data = text ? JSON.parse(text) : null } catch (e) { data = null }
+      if (!res.ok) throw new Error((data && data.message) || text || 'Invalid code')
       setStep(3)
       setMessage('Code verified — set password')
     } catch (err) {
@@ -78,13 +84,15 @@ export default function SignupFlow({ onSignupSuccess, onCancel }) {
     }
     setPasswordError('')
     try {
-      const res = await fetch('/api/auth/signup', {
+      const res = await fetch(`${API_BASE}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, code })
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || 'Signup failed')
+      const text = await res.text()
+      let data = null
+      try { data = text ? JSON.parse(text) : null } catch (e) { data = null }
+      if (!res.ok) throw new Error((data && data.message) || text || 'Signup failed')
       localStorage.setItem('token', data.token)
       onSignupSuccess(data.user)
     } catch (err) {

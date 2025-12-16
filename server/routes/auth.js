@@ -87,8 +87,8 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ message: 'Email, password, and code are required' });
     }
 
-    // Verify code again
-    const isValid = await VerificationCode.verifyCode(email, code);
+    // Consume (verify + delete) the code for signup
+    const isValid = await VerificationCode.consumeCode(email, code);
     if (!isValid) {
       return res.status(400).json({ message: 'Invalid or expired code' });
     }
