@@ -1,13 +1,11 @@
 require('dotenv').config();
 
-// Dynamic provider loader - supports 'gmail' (Gmail API) and 'sendgrid'
+// Dynamic provider loader - supports 'gmail' (Gmail API) and 'smtp'
 const provider = process.env.EMAIL_PROVIDER || 'gmail';
 
 let emailProvider;
 try {
-  if (provider === 'sendgrid') {
-    emailProvider = require('./providers/sendgridEmailService');
-  } else if (provider === 'smtp') {
+  if (provider === 'smtp') {
     emailProvider = require('./providers/smtpEmailService');
   } else {
     // Default to Gmail implementation
