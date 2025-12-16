@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './loginSignup.css'
+import bg from '../assets/University-of-San-Carlos-background.jpg'
 
 export default function SignupFlow({ onSignupSuccess, onCancel }) {
   const [step, setStep] = useState(1)
@@ -92,7 +93,15 @@ export default function SignupFlow({ onSignupSuccess, onCancel }) {
   }
 
   return (
-    <div className="modal-overlay">
+    <div
+      className="modal-overlay"
+      style={{
+        backgroundImage: `url(${bg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h1>Create your account</h1>
 

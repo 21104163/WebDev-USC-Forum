@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './loginSignup.css'
+import bg from '../assets/University-of-San-Carlos-background.jpg'
 
 export default function Login({ onLogin, onShowSignup, onShowForgot }) {
   const [email, setEmail] = useState('')
@@ -60,7 +61,15 @@ export default function Login({ onLogin, onShowSignup, onShowForgot }) {
   }
 
   return (
-    <div className="modal-overlay">
+    <div
+      className="modal-overlay"
+      style={{
+        backgroundImage: `url(${bg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h1>Login to your account</h1>
 

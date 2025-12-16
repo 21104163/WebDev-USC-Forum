@@ -10,14 +10,32 @@
 }
 
 .modal {
-  background: linear-gradient(135deg, #174c3b 0%, #1e5a47 100%);
+  background: linear-gradient(135deg, rgba(23,76,59,0.45) 0%, rgba(30,90,71,0.45) 100%);
   padding: 2.5rem;
   width: 380px;
   border-radius: 12px;
   position: relative;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
 }
+
+/* faint USC seal behind modal content */
+.modal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('../assets/USC_university_seal.svg.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 220px auto;
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ensure modal children render above the faint background */
+.modal > * { position: relative; z-index: 1; }
 
 .modal-close {
   position: absolute;
@@ -43,12 +61,13 @@
 
 .modal-form input {
   padding: 0.85rem;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.60);
   color: #174c3b;
   font-size: 0.95rem;
   transition: all 0.3s;
+  backdrop-filter: blur(8px);
 }
 
 .modal-form input:focus {
@@ -159,12 +178,31 @@ h1 {
 .auth-box {
   width: 380px;
   max-width: 96%;
-  background: linear-gradient(180deg, #ffffff 0%, #f7fff9 100%);
+  background: linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(247,255,249,0.68) 100%);
   border-radius: 14px;
-  box-shadow: 0 20px 40px rgba(18, 45, 34, 0.35), 0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: 0 16px 32px rgba(18, 45, 34, 0.22), 0 2px 6px rgba(0,0,0,0.05);
   padding: 1.75rem;
-  border: 1px solid rgba(23,76,59,0.06);
+  border: 1px solid rgba(23,76,59,0.04);
+  position: relative;
+  backdrop-filter: blur(10px);
 }
+
+/* faint USC seal behind auth box */
+.auth-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('../assets/USC_university_seal.svg.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 200px auto;
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ensure auth-box children render above the faint background */
+.auth-box > * { position: relative; z-index: 1; }
 
 .auth-container h2 {
   margin: 0 0 0.75rem 0;

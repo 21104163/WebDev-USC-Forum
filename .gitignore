@@ -1,2 +1,21 @@
+# Node dependencies (ALL folders)
 node_modules/
+
+# Environment variables
 .env
+.env.*
+*.env
+
+# OAuth / API secrets
+client_secret_*.json
+
+# Twilio / recovery / private files
+twilio_*.txt
+
+# Build output
+dist/
+build/
+
+# OS / editor files
+.DS_Store
+.vscode/
