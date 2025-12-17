@@ -239,6 +239,7 @@ body {
 .post-actions {
   color: #666;
   font-size: 0.9rem;
+  text-align: left;
 }
 
 .rightbar .widget {
@@ -256,6 +257,16 @@ body {
   border-bottom: 1px solid #f1f1f1;
 }
 
+.post-actions button {
+  margin: 0%;
+  padding: 0.25rem 0.5rem;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  margin-right: 1rem;
+  font-size: larger;
+}
 /* -------------------------------------------------------
    Responsive
 ------------------------------------------------------- */
@@ -277,7 +288,7 @@ body {
   }
 }
 /* -------------------------------------------------------
-   Header Component
+   search bar
    */
 .search-form{
   width: 300%;
@@ -307,3 +318,5 @@ body {
   cursor: pointer;
   font-size: 80%;
 }
+
+

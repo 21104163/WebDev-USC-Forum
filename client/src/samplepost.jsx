@@ -18,10 +18,10 @@ export default function PostCard({ postid}) {
   return (
     <article className="card post">
       <div className="post-header">
-        <div><img src = {avatar} alt="Avatar" /></div>
+        <div className="avatar"><img src = {avatar} alt="Avatar" /></div>
         <div className="meta">
           <div className="author">
-            {authorName} · {authorTag} <span className="tag">CS</span>
+            {authorName} · {authorTag} 
           </div>
           <h4>{title}</h4>
         </div>
@@ -30,7 +30,7 @@ export default function PostCard({ postid}) {
       <p className="post-body">{body}</p>
 
       <div className="post-actions">
-        <button>👍 {likes}</button> · <button>💬 {comments}</button> · <button>⚑ Report</button>
+        <button>👍 {likes} </button>  <button>💬 {comments} </button>  <button>⚑ Report</button>
       </div>
     </article>
   )
