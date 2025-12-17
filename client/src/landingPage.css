@@ -319,6 +319,20 @@ body {
 }
 /*createPost CSS*/
 
+.submitted {
+  position: fixed;
+  bottom: 20px; /* Position at the bottom of the viewport */
+  right: 20px; /* Position at the right of the viewport */
+  background-color: #4caf50; /* Green background */
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Ensure it's above other content */
+  /* Add smooth transition for appearance/disappearance */
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
 
 .post-form{
   width: 90%;
