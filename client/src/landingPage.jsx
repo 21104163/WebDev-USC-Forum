@@ -3,6 +3,7 @@ import { useState } from "react";
 import LogIn from './landingPage_components/logIn.jsx'
 import SignUp from './landingPage_components/signUp.jsx'
 import uscLogo from './assets/USC_university_seal.svg.png';
+import { Header } from './header.jsx';
 
 function Sidebar() {
   return (
@@ -27,10 +28,14 @@ function Topbar({onLoginClick, onSignUpClick}) {
           <li>University of San Carlos</li>
           <li class="bigFont">Forum</li>
         </ul>
+<<<<<<< Updated upstream
             <form action ="" className = "search-form">
             <input type="text" placeholder="Search..." className="search-box"/>
             <button type ="submit" className="search-button">GO</button>
             </form>
+=======
+        <Header />
+>>>>>>> Stashed changes
       </div>
 
       <div className="auth-buttons">

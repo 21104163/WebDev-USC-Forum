@@ -276,3 +276,35 @@ body {
     width: 120px;
   }
 }
+/* -------------------------------------------------------
+   Header Component
+   */
+.search-form{
+  width: 100%;
+  border-radius: 5px;
+  background-color: white;
+  justify-content: center;
+  padding: auto 2%;
+  margin-left:15%
+}
+
+.search-form input{
+  width: 75%;
+  background: transparent;
+  margin-left: none;
+  border: none;
+  min-height: 100%;
+  color: black;
+  font-size: 80%;
+  outline: none;
+  padding-left: 2%;
+}
+
+.search-form button{
+  background:transparent;
+  color:gray;
+  border: none;
+  border-radius: 100%;
+  cursor: pointer;
+  font-size: 80%;
+}
