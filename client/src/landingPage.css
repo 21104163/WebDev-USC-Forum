@@ -200,7 +200,6 @@ body {
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
 }
 
 .post {
@@ -318,5 +317,35 @@ body {
   cursor: pointer;
   font-size: 80%;
 }
+/*createPost CSS*/
 
+
+.post-form{
+  width: 90%;
+  margin: 0;
+  border: none;
+  border-color: transparent;
+  font-family: sans-serif;
+}
+
+.post-form #title{
+  width: 100%;
+  border-radius: 4px;
+  background: transparent;
+}
+
+.post-form #content{
+  border-radius: 4px;
+  box-sizing: border-box;
+  height:1 rem auto;
+}
+.post-form button{
+  background-color: #174c3b;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
 

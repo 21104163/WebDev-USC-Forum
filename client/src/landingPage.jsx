@@ -5,6 +5,7 @@ import SignUp from './landingPage_components/signUp.jsx'
 import uscLogo from './assets/USC_university_seal.svg.png';
 import { Header } from './header.jsx';
 import Post from './samplepost.jsx';
+import { PostCreate } from './createpost.jsx';
 
 function Sidebar() {
   return (
@@ -77,6 +78,7 @@ export default function LandingPage() {
         <div className="container">
           <div className="content">
             <div className="feed">
+              <PostCreate />
               <Post postid={1} />
               <Post postid={2} />
               <Post postid={3} />
