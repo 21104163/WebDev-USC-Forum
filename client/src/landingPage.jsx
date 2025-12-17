@@ -4,6 +4,7 @@ import LogIn from './landingPage_components/logIn.jsx'
 import SignUp from './landingPage_components/signUp.jsx'
 import uscLogo from './assets/USC_university_seal.svg.png';
 import { Header } from './header.jsx';
+import Post from './samplepost.jsx';
 
 function Sidebar() {
   return (
@@ -28,14 +29,7 @@ function Topbar({onLoginClick, onSignUpClick}) {
           <li>University of San Carlos</li>
           <li class="bigFont">Forum</li>
         </ul>
-<<<<<<< Updated upstream
-            <form action ="" className = "search-form">
-            <input type="text" placeholder="Search..." className="search-box"/>
-            <button type ="submit" className="search-button">GO</button>
-            </form>
-=======
         <Header />
->>>>>>> Stashed changes
       </div>
 
       <div className="auth-buttons">
@@ -46,27 +40,6 @@ function Topbar({onLoginClick, onSignUpClick}) {
   );
 }
 
-function PostCard({ title = 'Sample Post', body = 'This is a sample post.' }) {
-  return (
-    <article className="card post">
-      <div className="post-header">
-        <div className="avatar">◯</div>
-        <div className="meta">
-          <div className="author">
-            Anonymous · CS Student <span className="tag">CS</span>
-          </div>
-          <h4>{title}</h4>
-        </div>
-      </div>
-
-      <p className="post-body">{body}</p>
-
-      <div className="post-actions">
-        👍 Like · 💬 Comment · ⚑ Report
-      </div>
-    </article>
-  )
-}
 
 function RightSidebar() {
   return (
@@ -104,8 +77,9 @@ export default function LandingPage() {
         <div className="container">
           <div className="content">
             <div className="feed">
-              <PostCard />
-              <PostCard title="Welcome to USC Forum!" body="Your gateway to campus discussions." />
+              <Post postid={1} />
+              <Post postid={2} />
+              <Post postid={3} />
             </div>
             <RightSidebar />
           </div>
