@@ -200,7 +200,6 @@ body {
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
 }
 
 .post {
@@ -239,6 +238,7 @@ body {
 .post-actions {
   color: #666;
   font-size: 0.9rem;
+  text-align: left;
 }
 
 .rightbar .widget {
@@ -256,6 +256,16 @@ body {
   border-bottom: 1px solid #f1f1f1;
 }
 
+.post-actions button {
+  margin: 0%;
+  padding: 0.25rem 0.5rem;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  margin-right: 1rem;
+  font-size: larger;
+}
 /* -------------------------------------------------------
    Responsive
 ------------------------------------------------------- */
@@ -276,3 +286,80 @@ body {
     width: 120px;
   }
 }
+/* -------------------------------------------------------
+   search bar
+   */
+.search-form{
+  width: 300%;
+  border-radius: 5px;
+  background-color: white;
+
+}
+
+.search-form input{
+  width: 70%;
+  background: transparent;
+  margin-left: none;
+  border: none;
+  min-height: 100%;
+  color: black;
+  font-size: 80%;
+  outline: none
+}
+
+.search-form button{
+  padding-right: 0%;
+  margin-right: 0%;
+  width: 20%;
+  background:transparent;
+  color:gray;
+  border: none;
+  cursor: pointer;
+  font-size: 80%;
+}
+/*createPost CSS*/
+
+.submitted {
+  position: fixed;
+  bottom: 20px; /* Position at the bottom of the viewport */
+  right: 20px; /* Position at the right of the viewport */
+  background-color: #4caf50; /* Green background */
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Ensure it's above other content */
+  /* Add smooth transition for appearance/disappearance */
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+.post-form{
+  width: 90%;
+  margin: 0;
+  border: none;
+  border-color: transparent;
+  font-family: sans-serif;
+}
+
+.post-form #title{
+  width: 100%;
+  border-radius: 4px;
+  background: transparent;
+}
+
+.post-form #content{
+  border-radius: 4px;
+  box-sizing: border-box;
+  height:1 rem auto;
+}
+.post-form button{
+  background-color: #174c3b;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+

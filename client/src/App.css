@@ -1,3 +1,75 @@
+
+
+/* Header CSS */
+
+.search-form{
+  width: 50%;
+  border-radius: 5px;
+  background-color: white;
+  justify-content: center;
+  padding: auto 2%;
+  margin-left:15%
+}
+
+.search-form input{
+  width: 75%;
+  background: transparent;
+  margin-left: none;
+  border: none;
+  min-height: 100%;
+  color: black;
+  font-size: 80%;
+  outline: none;
+  padding-left: 2%;
+}
+
+.search-form button{
+  background:transparent;
+  color:gray;
+  border: none;
+  cursor: pointer;
+  font-size: 80%;
+  width: 20%;
+}
+.iPost{
+  width:100vw;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  border-color: aliceblue;
+  padding:0;
+}
+.post-form{
+  width: 50%;
+  margin: 0;
+  padding: 2%;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  font-family: sans-serif;
+}
+
+.post-form #title{
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.post-form #content{
+  width: 100%;
+  min-height:10vh;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
 #root {
   max-width: 100%;
   margin: 0 auto;
