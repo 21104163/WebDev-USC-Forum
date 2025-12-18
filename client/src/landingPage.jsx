@@ -1,6 +1,9 @@
 import './landingPage.css'
 import { useState } from "react";
 import uscLogo from './assets/USC_university_seal.svg.png';
+import { Header } from './header.jsx';
+import Post from './samplepost.jsx';
+import { PostCreate } from './createpost.jsx';
 
 function Sidebar() {
   return (
@@ -24,9 +27,7 @@ function Topbar({ user, onLogout }) {
           <li>University of San Carlos</li>
           <li className="bigFont">Forum</li>
         </ul>
-        <div className="search">
-          🔍 <input placeholder="Search..." />
-        </div>
+        <Header />
       </div>
 
       <div className="auth-buttons">
@@ -43,27 +44,6 @@ function Topbar({ user, onLogout }) {
   );
 }
 
-function PostCard({ title = 'Sample Post', body = 'This is a sample post.' }) {
-  return (
-    <article className="card post">
-      <div className="post-header">
-        <div className="avatar">◯</div>
-        <div className="meta">
-          <div className="author">
-            Anonymous · CS Student <span className="tag">CS</span>
-          </div>
-          <h4>{title}</h4>
-        </div>
-      </div>
-
-      <p className="post-body">{body}</p>
-
-      <div className="post-actions">
-        👍 Like · 💬 Comment · ⚑ Report
-      </div>
-    </article>
-  )
-}
 
 function RightSidebar() {
   return (
@@ -94,8 +74,10 @@ export default function LandingPage({ user, onLogout }) {
         <div className="container">
           <div className="content">
             <div className="feed">
-              <PostCard />
-              <PostCard title="Welcome to USC Forum!" body="Your gateway to campus discussions." />
+              <PostCreate />
+              <Post postid={1} />
+              <Post postid={2} />
+              <Post postid={3} />
             </div>
             <RightSidebar />
           </div>
