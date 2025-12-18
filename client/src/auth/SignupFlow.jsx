@@ -2,7 +2,8 @@ import { useState } from 'react'
 import './loginSignup.css'
 import bg from '../assets/University-of-San-Carlos-background.jpg'
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api'
+const raw = import.meta.env.VITE_API_URL || '/api'
+const API_BASE = raw.endsWith('/api') ? raw.replace(/\/$/,'') : raw.replace(/\/$/,'') + '/api'
 
 export default function SignupFlow({ onSignupSuccess, onCancel }) {
   const [step, setStep] = useState(1)
