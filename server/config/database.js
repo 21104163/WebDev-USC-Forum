@@ -41,16 +41,24 @@ async function initializeDatabase() {
       );
     `);
 
+
     await connection.query(`
       CREATE TABLE IF NOT EXISTS verification_codes (
         id INT AUTO_INCREMENT PRIMARY KEY,
         email VARCHAR(255) NOT NULL,
         code VARCHAR(6) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        expires_at DATETIME NOT NULL,
-        FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
+        expires_at DATETIME NOT NULL
       );
     `);
+
+    try {
+      await connection.query('CREATE INDEX idx_verif_email ON verification_codes(email)');
+    } catch (err) {
+      if (!/Duplicate key name|already exists/i.test(err.message)) {
+        throw err;
+      }
+    }
 
     console.log('✓ Database tables initialized');
   } catch (error) {
@@ -60,7 +68,6 @@ async function initializeDatabase() {
   }
 }
 
-// Run on server startup
 initializeDatabase().catch(console.error);
 
 module.exports = pool;
