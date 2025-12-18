@@ -7,11 +7,28 @@ require('./config/database');
 
 const app = express();
 
-// Middleware
+const allowedOrigins = [
+  'https://web-dev-usc-forum.vercel.app',
+  'http://localhost:5173'
+];
+
+// CORS middleware (ONLY ONCE)
 app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow Postman / curl
+
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+
+    return callback(new Error('CORS blocked: ' + origin));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Handle preflight requests
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
