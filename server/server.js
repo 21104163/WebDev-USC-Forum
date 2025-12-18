@@ -27,7 +27,7 @@ app.use(cors({
 }));
 
 // Handle preflight requests
-app.options('*', cors());
+app.options('/*splat', cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
