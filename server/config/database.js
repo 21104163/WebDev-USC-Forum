@@ -1,41 +1,35 @@
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 require('dotenv').config();
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  // Use SSL in production (Supabase requires it)
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  max: 10
 });
 
-// Initialize database and tables
+// Initialize database and tables (Postgres)
 async function initializeDatabase() {
-  const connection = await pool.getConnection();
+  const client = await pool.connect();
   try {
-    // Create users table
-    await connection.query(`
+    await client.query(`
       CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         email_verified BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
-    // Create verification codes table
-    await connection.query(`
+    await client.query(`
       CREATE TABLE IF NOT EXISTS verification_codes (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         email VARCHAR(255) NOT NULL,
         code VARCHAR(6) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        expires_at DATETIME NOT NULL,
+        expires_at TIMESTAMP NOT NULL,
         FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
       );
     `);
@@ -44,7 +38,7 @@ async function initializeDatabase() {
   } catch (error) {
     console.error('Database initialization error:', error);
   } finally {
-    connection.release();
+    client.release();
   }
 }
 
