@@ -1,48 +1,51 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+const { Pool } = require("pg");
+require("dotenv").config();
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  // Use SSL in production (Supabase requires it)
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  max: 10
+  ssl: { rejectUnauthorized: false },
+  max: 10,
 });
 
-// Initialize database and tables (Postgres)
+// Initialize tables ONLY in development
 async function initializeDatabase() {
+  if (process.env.NODE_ENV === "production") return;
+
   const client = await pool.connect();
   try {
     await client.query(`
+      CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+    `);
+
+    await client.query(`
       CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
         email_verified BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
       );
     `);
 
     await client.query(`
       CREATE TABLE IF NOT EXISTS verification_codes (
-        id SERIAL PRIMARY KEY,
-        email VARCHAR(255) NOT NULL,
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
         code VARCHAR(6) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         expires_at TIMESTAMP NOT NULL,
-        FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
+        created_at TIMESTAMP DEFAULT NOW()
       );
     `);
 
-    console.log('✓ Database tables initialized');
+    console.log("✓ Database tables initialized (dev only)");
   } catch (error) {
-    console.error('Database initialization error:', error);
+    console.error("Database initialization error:", error);
   } finally {
     client.release();
   }
 }
 
-// Call this on server startup
 initializeDatabase().catch(console.error);
 
 module.exports = pool;
