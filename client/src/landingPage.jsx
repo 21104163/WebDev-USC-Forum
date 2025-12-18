@@ -1,7 +1,5 @@
 import './landingPage.css'
 import { useState } from "react";
-import LogIn from './landingPage_components/logIn.jsx'
-import SignUp from './landingPage_components/signUp.jsx'
 import uscLogo from './assets/USC_university_seal.svg.png';
 import { Header } from './header.jsx';
 import Post from './samplepost.jsx';
@@ -20,22 +18,27 @@ function Sidebar() {
   )
 }
 
-function Topbar({onLoginClick, onSignUpClick}) {
-    
+function Topbar({ user, onLogout }) {
   return (
     <header className="topbar fullwidth">
       <div className="left">
         <img src={uscLogo} alt="uscLogo" ></img>
         <ul className="brand">
           <li>University of San Carlos</li>
-          <li class="bigFont">Forum</li>
+          <li className="bigFont">Forum</li>
         </ul>
         <Header />
       </div>
 
       <div className="auth-buttons">
-        <button className="login-btn" onClick={onLoginClick}>Login</button>
-        <button className="signup-btn" onClick={onSignUpClick}>Sign Up</button>
+        {user ? (
+          <>
+            <span className="user-email">{user.email}</span>
+            <button className="logout-btn" onClick={onLogout}>Logout</button>
+          </>
+        ) : (
+          <div />
+        )}
       </div>
     </header>
   );
@@ -61,20 +64,13 @@ function RightSidebar() {
   )
 }
 
-export default function LandingPage() {
-
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isSignUpOpen, setSignUpOpen] = useState(false);
-
+export default function LandingPage({ user, onLogout }) {
   return (
     <div className="app-root">
       <Sidebar />
 
       <div className="main">
-        <Topbar 
-          onLoginClick={() => setIsLoginOpen(true)}
-          onSignUpClick={() => setSignUpOpen(true)} 
-        />
+        <Topbar user={user} onLogout={onLogout} />
         <div className="container">
           <div className="content">
             <div className="feed">
@@ -87,8 +83,6 @@ export default function LandingPage() {
           </div>
         </div>
       </div>
-        <LogIn isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
-        <SignUp isOpen={isSignUpOpen} onClose={() => setSignUpOpen(false)} />
     </div>
   )
 }

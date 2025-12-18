@@ -1,36 +1,31 @@
 const express = require('express');
-const app = express();
 const cors = require('cors');
-const mysql = require('mysql');
-app.use(cors());
+require('dotenv').config();
+
+// Initialize database
+require('./config/database');
+
+const app = express();
+
+// Middleware
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true
+}));
 app.use(express.json());
-app.get('/', (req, res) => res.send('USC Forum API running'));
-app.listen(5000, () => console.log('API running on port 5000'));
+app.use(express.urlencoded({ extended: true }));
 
-// Database connection
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'usc_forum'
-});
-db.connect(err => {
-    if (err) {
-        console.error('Error connecting to database:', err);
-        return;
-    }
-    console.log('Connected to MySQL database');
+// Routes
+app.use('/api/auth', require('./routes/auth'));
+
+// Basic route
+app.get('/', (req, res) => res.json({ message: 'USC Forum API running' }));
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ message: 'Internal server error' });
 });
 
-/* SAMPLE ON HOW TO GET 
-app.get('/posts', (req, res) => {
-    const query = 'SELECT * FROM posts';
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error fetching posts:', err);
-            return res.status(500).json({ error: 'Failed to fetch posts' });
-        }
-        res.json(results);
-    });
-});
-*/
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`✓ API running on http://localhost:${PORT}`));
