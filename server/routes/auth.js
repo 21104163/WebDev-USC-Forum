@@ -50,6 +50,22 @@ router.post('/send-code', async (req, res) => {
   }
 });
 
+// Verify code
+router.post('/verify-code', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    if (!email || !code) return res.status(400).json({ message: 'Email and code are required' });
+
+    const isValid = await VerificationCode.verifyCode(email, code);
+    if (!isValid) return res.status(400).json({ message: 'Invalid or expired code' });
+
+    res.json({ success: true, message: 'Code verified' });
+  } catch (error) {
+    console.error('Error verifying code:', error);
+    res.status(500).json({ message: 'Error verifying code' });
+  }
+});
+
 // Signup
 router.post('/signup', async (req, res) => {
   try {
