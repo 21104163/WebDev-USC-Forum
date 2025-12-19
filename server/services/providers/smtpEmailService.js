@@ -41,6 +41,9 @@ async function testEmailConnection() {
   }
 }
 
+// Default From header (use custom EMAIL_FROM if provided, otherwise show 'USC Forum' with SMTP user)
+const DEFAULT_FROM = process.env.EMAIL_FROM || `USC Forum <${process.env.SMTP_USER || 'noreply@uscforum.com'}>`;
+
 // ----------------------------
 // Send verification code email
 // ----------------------------
@@ -59,7 +62,7 @@ async function sendVerificationCodeEmail(email, code) {
   `;
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM,
+    from: DEFAULT_FROM,
     to: email,
     subject: 'USC Forum - Verification Code',
     html
@@ -90,7 +93,7 @@ async function sendWelcomeEmail(email) {
   `;
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM,
+    from: DEFAULT_FROM,
     to: email,
     subject: 'Welcome to USC Forum',
     html
@@ -123,7 +126,7 @@ async function sendPasswordResetCodeEmail(email, code) {
   `;
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM,
+    from: DEFAULT_FROM,
     to: email,
     subject: 'USC Forum - Password Reset Code',
     html
