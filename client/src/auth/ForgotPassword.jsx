@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './loginSignup.css'
 import bg from '../assets/University-of-San-Carlos-background.jpg'
+import ConfirmModal from '../components/ConfirmModal'
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
@@ -13,6 +14,7 @@ export default function ForgotPassword({ onDone, onCancel }) {
   const [message, setMessage] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [showConfirm, setShowConfirm] = useState(false)
 
   async function sendCode() {
     setMessage('')
@@ -63,9 +65,12 @@ export default function ForgotPassword({ onDone, onCancel }) {
       return
     }
     setPasswordError('')
-    // confirm user intent before changing password
-    if (!window.confirm('Change password now?')) return
+    // show confirmation modal instead of native confirm
+    setShowConfirm(true)
+  }
 
+  async function doResetPassword() {
+    setMessage('')
     try {
       const res = await fetch(`${API_BASE}/auth/forgot-password/reset`, {
         method: 'POST',
@@ -84,63 +89,75 @@ export default function ForgotPassword({ onDone, onCancel }) {
   }
 
   return (
-    <div
-      className="modal-overlay"
-      style={{
-        backgroundImage: `url(${bg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h1>Forgot Password</h1>
+    <>
+      <div
+        className="modal-overlay"
+        style={{
+          backgroundImage: `url(${bg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        <div className="modal" onClick={(e) => e.stopPropagation()}>
+          <h1>Forgot Password</h1>
 
-        {step === 1 && (
-          <div className="modal-form">
-            <input type="email" placeholder="USC Email" value={email} onChange={e => setEmail(e.target.value)} onBlur={async ()=>{
-              const uscRe = /^[^\s@]+@usc\.edu(\.ph)?$/i
-              if (!email || !uscRe.test(email)) return
-              try {
-                  const res = await fetch(`${API_BASE}/auth/check-email?email=${encodeURIComponent(email)}`)
-                  const text = await res.text()
-                  let data = null
-                  try { data = text ? JSON.parse(text) : null } catch (e) { data = null }
-                  if (!res.ok) throw new Error((data && data.message) || text || 'Check failed')
-                  if (!data.exists) setEmailError('Email not found in our records')
-              } catch (err) {
-                console.error('Email check error', err)
-              }
-            }} required />
-            {emailError && <div className="field-error">{emailError}</div>}
-            <button className="modal-submit" onClick={sendCode}>Send reset code</button>
-          </div>
-        )}
-
-        {step === 2 && (
-          <form className="modal-form" onSubmit={resetPassword}>
-            <input placeholder="6-digit code" value={code} onChange={e => setCode(e.target.value)} required />
-            <input placeholder="New password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-            <input placeholder="Confirm password" type="password" value={confirm} onChange={e => setConfirm(e.target.value)} required />
-
-            {passwordError && <div className="field-error">{passwordError}</div>}
-
-            <div className="pw-requirements">
-              <div className={/[a-z]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one lowercase</div>
-              <div className={/[A-Z]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one uppercase</div>
-              <div className={/[0-9]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one number</div>
+          {step === 1 && (
+            <div className="modal-form">
+              <input type="email" placeholder="USC Email" value={email} onChange={e => setEmail(e.target.value)} onBlur={async ()=>{
+                const uscRe = /^[^\s@]+@usc\.edu(\.ph)?$/i
+                if (!email || !uscRe.test(email)) return
+                try {
+                    const res = await fetch(`${API_BASE}/auth/check-email?email=${encodeURIComponent(email)}`)
+                    const text = await res.text()
+                    let data = null
+                    try { data = text ? JSON.parse(text) : null } catch (e) { data = null }
+                    if (!res.ok) throw new Error((data && data.message) || text || 'Check failed')
+                    if (!data.exists) setEmailError('Email not found in our records')
+                } catch (err) {
+                  console.error('Email check error', err)
+                }
+              }} required />
+              {emailError && <div className="field-error">{emailError}</div>}
+              <button className="modal-submit" onClick={sendCode}>Send reset code</button>
             </div>
+          )}
 
-            <button type="submit" className="modal-submit">Reset password</button>
-          </form>
-        )}
+          {step === 2 && (
+            <form className="modal-form" onSubmit={resetPassword}>
+              <input placeholder="6-digit code" value={code} onChange={e => setCode(e.target.value)} required />
+              <input placeholder="New password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+              <input placeholder="Confirm password" type="password" value={confirm} onChange={e => setConfirm(e.target.value)} required />
 
-        {message && <div className="step-info">{message}</div>}
+              {passwordError && <div className="field-error">{passwordError}</div>}
 
-        <div style={{marginTop:12}}>
-          <button className="back-btn" onClick={onCancel}>Back</button>
+              <div className="pw-requirements">
+                <div className={/[a-z]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one lowercase</div>
+                <div className={/[A-Z]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one uppercase</div>
+                <div className={/[0-9]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one number</div>
+              </div>
+
+              <button type="submit" className="modal-submit">Reset password</button>
+            </form>
+          )}
+
+          {message && <div className="step-info">{message}</div>}
+
+          <div style={{marginTop:12}}>
+            <button className="back-btn" onClick={onCancel}>Back</button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <ConfirmModal
+        visible={showConfirm}
+        title="Change password"
+        message="Change password now?"
+        confirmText="Change"
+        cancelText="Cancel"
+        onConfirm={() => { setShowConfirm(false); doResetPassword() }}
+        onCancel={() => setShowConfirm(false)}
+      />
+    </>
   )
 }

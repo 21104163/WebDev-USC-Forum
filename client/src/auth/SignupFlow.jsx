@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './loginSignup.css'
 import bg from '../assets/University-of-San-Carlos-background.jpg'
+import ConfirmModal from '../components/ConfirmModal'
 
 const raw = import.meta.env.VITE_API_URL || '/api'
 const API_BASE = raw.endsWith('/api') ? raw.replace(/\/$/,'') : raw.replace(/\/$/,'') + '/api'
@@ -14,6 +15,7 @@ export default function SignupFlow({ onSignupSuccess, onCancel }) {
   const [message, setMessage] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [showConfirm, setShowConfirm] = useState(false)
 
   async function sendCode() {
     setMessage('')
@@ -68,25 +70,8 @@ export default function SignupFlow({ onSignupSuccess, onCancel }) {
     }
   }
 
-  async function completeSignup(e) {
-    e.preventDefault()
+  async function doCompleteSignup() {
     setMessage('')
-    if (password !== confirm) {
-      setPasswordError('Passwords do not match')
-      return
-    }
-    // check password complexity client-side
-    const lower = /[a-z]/.test(password)
-    const upper = /[A-Z]/.test(password)
-    const digit = /[0-9]/.test(password)
-    if (!(lower && upper && digit)) {
-      setPasswordError('Password must contain lowercase, uppercase and a number')
-      return
-    }
-    setPasswordError('')
-    // confirm user intent before creating account
-    if (!window.confirm('Create account now with this password?')) return
-
     try {
       const res = await fetch(`${API_BASE}/auth/signup`, {
         method: 'POST',
@@ -104,57 +89,89 @@ export default function SignupFlow({ onSignupSuccess, onCancel }) {
     }
   }
 
+  async function completeSignup(e) {
+    e.preventDefault()
+    setMessage('')
+    if (password !== confirm) {
+      setPasswordError('Passwords do not match')
+      return
+    }
+    // check password complexity client-side
+    const lower = /[a-z]/.test(password)
+    const upper = /[A-Z]/.test(password)
+    const digit = /[0-9]/.test(password)
+    if (!(lower && upper && digit)) {
+      setPasswordError('Password must contain lowercase, uppercase and a number')
+      return
+    }
+    setPasswordError('')
+    // show confirmation modal instead of native confirm
+    setShowConfirm(true)
+  }
+
   return (
-    <div
-      className="modal-overlay"
-      style={{
-        backgroundImage: `url(${bg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h1>Create your account</h1>
+    <>
+      <div
+        className="modal-overlay"
+        style={{
+          backgroundImage: `url(${bg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        <div className="modal" onClick={(e) => e.stopPropagation()}>
+          <h1>Create your account</h1>
 
-        {step === 1 && (
-          <div className="modal-form">
-            <input type="email" placeholder="USC Email" value={email} onChange={e => setEmail(e.target.value)} required />
-            {emailError && <div className="field-error">{emailError}</div>}
-            <button className="modal-submit" onClick={sendCode}>Send verification code</button>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="modal-form">
-            <input placeholder="6-digit code" value={code} onChange={e => setCode(e.target.value)} required />
-            <button className="modal-submit" onClick={verifyCode}>Verify code</button>
-          </div>
-        )}
-
-        {step === 3 && (
-          <form className="modal-form" onSubmit={completeSignup}>
-            <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
-            <input placeholder="Confirm Password" type="password" value={confirm} onChange={e => setConfirm(e.target.value)} required />
-
-            {passwordError && <div className="field-error">{passwordError}</div>}
-
-            <div className="pw-requirements">
-              <div className={/[a-z]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one lowercase</div>
-              <div className={/[A-Z]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one uppercase</div>
-              <div className={/[0-9]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one number</div>
+          {step === 1 && (
+            <div className="modal-form">
+              <input type="email" placeholder="USC Email" value={email} onChange={e => setEmail(e.target.value)} required />
+              {emailError && <div className="field-error">{emailError}</div>}
+              <button className="modal-submit" onClick={sendCode}>Send verification code</button>
             </div>
+          )}
 
-            <button type="submit" className="modal-submit">Create account</button>
-          </form>
-        )}
+          {step === 2 && (
+            <div className="modal-form">
+              <input placeholder="6-digit code" value={code} onChange={e => setCode(e.target.value)} required />
+              <button className="modal-submit" onClick={verifyCode}>Verify code</button>
+            </div>
+          )}
 
-        {message && <div className="step-info">{message}</div>}
+          {step === 3 && (
+            <form className="modal-form" onSubmit={completeSignup}>
+              <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+              <input placeholder="Confirm Password" type="password" value={confirm} onChange={e => setConfirm(e.target.value)} required />
 
-        <div style={{marginTop:12}}>
-          <button className="back-btn" onClick={onCancel}>Back</button>
+              {passwordError && <div className="field-error">{passwordError}</div>}
+
+              <div className="pw-requirements">
+                <div className={/[a-z]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one lowercase</div>
+                <div className={/[A-Z]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one uppercase</div>
+                <div className={/[0-9]/.test(password) ? 'pw-requirement met' : 'pw-requirement'}>• one number</div>
+              </div>
+
+              <button type="submit" className="modal-submit">Create account</button>
+            </form>
+          )}
+
+          {message && <div className="step-info">{message}</div>}
+
+          <div style={{marginTop:12}}>
+            <button className="back-btn" onClick={onCancel}>Back</button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <ConfirmModal
+        visible={showConfirm}
+        title="Create account"
+        message="Create account now with this password?"
+        confirmText="Create"
+        cancelText="Cancel"
+        onConfirm={() => { setShowConfirm(false); doCompleteSignup() }}
+        onCancel={() => setShowConfirm(false)}
+      />
+    </>
   )
 }

@@ -1,4 +1,5 @@
 import './landingPage.css'
+import ConfirmModal from './components/ConfirmModal'
 import { useState } from "react";
 import uscLogo from './assets/USC_university_seal.svg.png';
 import { Header } from './header.jsx';
@@ -21,6 +22,7 @@ function Sidebar() {
 }
 
 function Topbar({ user, onLogout }) {
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   return (
     <header className="topbar fullwidth">
       <div className="left">
@@ -36,7 +38,16 @@ function Topbar({ user, onLogout }) {
         {user ? (
           <>
             <span className="user-email">{user.email}</span>
-            <button className="logout-btn" onClick={() => { if (window.confirm('Are you sure you want to log out?')) onLogout() }}>Logout</button>
+            <button className="logout-btn" onClick={() => setShowLogoutConfirm(true)}>Logout</button>
+            <ConfirmModal
+              visible={showLogoutConfirm}
+              title="Log out"
+              message="Are you sure you want to log out?"
+              confirmText="Log out"
+              cancelText="Cancel"
+              onConfirm={() => { setShowLogoutConfirm(false); onLogout() }}
+              onCancel={() => setShowLogoutConfirm(false)}
+            />
           </>
         ) : (
           <div />
