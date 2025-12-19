@@ -20,6 +20,51 @@
   backdrop-filter: blur(10px);
 }
 
+/* Confirm modal: slightly wider and with even buttons centered */
+.confirm-modal .modal {
+  width: 520px; /* default width for confirm dialogs */
+  max-width: 92%;
+  padding: 2rem;
+}
+
+.confirm-modal .modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Force exact 50/50 split for buttons to avoid rendering differences */
+.confirm-modal .modal-actions button {
+  flex: 0 0 calc(50% - 0.375rem); /* account for gap */
+  box-sizing: border-box;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  line-height: 1;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.confirm-modal .modal-actions .back-btn,
+.confirm-modal .modal-actions .modal-submit {
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.confirm-modal .modal-actions .back-btn {
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-weight: 700;
+}
+
+.confirm-modal .modal-actions .modal-submit {
+  background: linear-gradient(135deg, #00d084 0%, #00a86d 100%);
+  color: #fff;
+  font-weight: 700;
+}
+
 /* faint USC seal behind modal content */
 .modal::before {
   content: "";
