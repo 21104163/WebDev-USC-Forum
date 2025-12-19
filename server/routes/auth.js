@@ -174,8 +174,8 @@ router.post('/forgot-password/send-code', async (req, res) => {
     // Generate verification code
     const code = await VerificationCode.generateCode(email);
 
-    // Send email with code
-    await sendVerificationCodeEmail(email, code);
+    // Send password-reset email with reset-specific template
+    await sendPasswordResetCodeEmail(email, code);
 
     res.json({ success: true, message: 'Password reset code sent to your email' });
   } catch (error) {

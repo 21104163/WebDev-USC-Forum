@@ -25,7 +25,8 @@ async function sendVerificationCodeEmail(email, code) {
       <p>If you didn't request this code, please ignore this email.</p>
     `;
 
-    const emailContent = `From: noreply@uscforum.com
+    const fromHeader = process.env.EMAIL_FROM || 'USC Forum <noreply@uscforum.com>';
+    const emailContent = `From: ${fromHeader}
 To: ${email}
 Subject: USC Forum - Verification Code
 Content-Type: text/html; charset=UTF-8
@@ -63,7 +64,8 @@ async function sendWelcomeEmail(email) {
       <p>Happy posting!</p>
     `;
 
-    const emailContent = `From: noreply@uscforum.com
+    const fromHeader = process.env.EMAIL_FROM || 'USC Forum <noreply@uscforum.com>';
+    const emailContent = `From: ${fromHeader}
 To: ${email}
 Subject: Welcome to USC Forum
 Content-Type: text/html; charset=UTF-8
@@ -103,7 +105,8 @@ async function sendPasswordResetCodeEmail(email, code) {
       <p>If you didn't request a password reset, please ignore this email.</p>
     `;
 
-    const emailContent = `From: noreply@uscforum.com
+    const fromHeader = process.env.EMAIL_FROM || 'USC Forum <noreply@uscforum.com>';
+    const emailContent = `From: ${fromHeader}
 To: ${email}
 Subject: USC Forum - Password Reset Code
 Content-Type: text/html; charset=UTF-8
