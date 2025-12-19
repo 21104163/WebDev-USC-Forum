@@ -85,7 +85,7 @@ export default function Login({ onLogin, onShowSignup, onShowForgot }) {
           <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           {passwordError && <div className="field-error">{passwordError}</div>}
           {error && <div className="error-message">{error}</div>}
-          {info && <div className="inline-note">{info}</div>}
+          {info && <div className={emailError ? 'field-error' : 'inline-note'}>{info}</div>}
           <button type="submit" className="modal-submit">Login</button>
         </form>
 

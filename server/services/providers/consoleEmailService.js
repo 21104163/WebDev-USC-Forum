@@ -6,6 +6,12 @@ async function sendVerificationCodeEmail(email, code) {
   return true;
 }
 
+async function sendPasswordResetCodeEmail(email, code) {
+  const message = `Sending password reset code to ${email}: ${code}`;
+  console.log('ConsoleEmailService:', message);
+  return true;
+}
+
 async function sendWelcomeEmail(email) {
   console.log(`ConsoleEmailService: Welcome email to ${email}`);
   return true;
@@ -13,5 +19,6 @@ async function sendWelcomeEmail(email) {
 
 module.exports = {
   sendVerificationCodeEmail,
+  sendPasswordResetCodeEmail,
   sendWelcomeEmail
 }

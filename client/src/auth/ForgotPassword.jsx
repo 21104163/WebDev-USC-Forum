@@ -63,6 +63,9 @@ export default function ForgotPassword({ onDone, onCancel }) {
       return
     }
     setPasswordError('')
+    // confirm user intent before changing password
+    if (!window.confirm('Change password now?')) return
+
     try {
       const res = await fetch(`${API_BASE}/auth/forgot-password/reset`, {
         method: 'POST',

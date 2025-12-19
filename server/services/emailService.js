@@ -20,5 +20,8 @@ try {
 
 module.exports = {
   sendVerificationCodeEmail: emailProvider.sendVerificationCodeEmail,
+  // Use a dedicated password reset email function if provider implements it;
+  // otherwise fall back to the verification-code email template.
+  sendPasswordResetCodeEmail: emailProvider.sendPasswordResetCodeEmail || emailProvider.sendVerificationCodeEmail,
   sendWelcomeEmail: emailProvider.sendWelcomeEmail
 };
