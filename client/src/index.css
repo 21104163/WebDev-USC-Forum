@@ -67,3 +67,23 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Global inline error styles: ensure all inline errors are red on black */
+.error,
+.error-message,
+.field-error,
+.auth-error,
+.input-error,
+.invalid-feedback,
+.error-text,
+.form-error,
+.inline-error,
+.validation-error {
+  color: #ff4d4f !important;
+  background: #000 !important;
+  padding: 0.25rem 0.4rem !important;
+  border-radius: 4px !important;
+  display: inline-block !important;
+  font-size: 0.9rem !important;
+  line-height: 1 !important;
+}

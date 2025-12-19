@@ -84,6 +84,9 @@ export default function SignupFlow({ onSignupSuccess, onCancel }) {
       return
     }
     setPasswordError('')
+    // confirm user intent before creating account
+    if (!window.confirm('Create account now with this password?')) return
+
     try {
       const res = await fetch(`${API_BASE}/auth/signup`, {
         method: 'POST',

@@ -91,7 +91,48 @@ ${message}`;
   }
 }
 
+// Send password reset code email
+async function sendPasswordResetCodeEmail(email, code) {
+  try {
+    const message = `
+      <h1>Your USC Forum Password Reset Code</h1>
+      <p>We received a request to reset the password for your USC Forum account.</p>
+      <p>Your reset code is:</p>
+      <h2 style="color: #dc3545; font-size: 2em; letter-spacing: 2px;">${code}</h2>
+      <p>This code will expire in 10 minutes.</p>
+      <p>If you didn't request a password reset, please ignore this email.</p>
+    `;
+
+    const emailContent = `From: noreply@uscforum.com
+To: ${email}
+Subject: USC Forum - Password Reset Code
+Content-Type: text/html; charset=UTF-8
+
+${message}`;
+
+    const encodedMessage = Buffer.from(emailContent)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: {
+        raw: encodedMessage
+      }
+    });
+
+    console.log(`✓ Password reset code sent to ${email}`);
+    return true;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw error;
+  }
+}
+
 module.exports = {
   sendVerificationCodeEmail,
+  sendPasswordResetCodeEmail,
   sendWelcomeEmail
 };

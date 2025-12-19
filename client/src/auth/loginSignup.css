@@ -109,13 +109,13 @@
 }
 
 .error-message {
-  color: #ff6b6b;
+  color: #ff4d4f !important;
   font-size: 0.9rem;
   text-align: center;
   margin: -0.5rem 0 0.5rem 0;
-  padding: 0.5rem;
-  background: rgba(255, 107, 107, 0.1);
-  border-radius: 6px;
+  padding: 0.5rem !important;
+  background: #000 !important;
+  border-radius: 6px !important;
 }
 
 .success-message {
@@ -249,10 +249,10 @@ h1 {
 }
 
 .auth-error {
-  color: #c92a2a;
-  background: rgba(255, 107, 107, 0.06);
-  padding: 0.5rem;
-  border-radius: 8px;
+  color: #ff4d4f !important;
+  background: #000 !important;
+  padding: 0.5rem !important;
+  border-radius: 8px !important;
   text-align: center;
 }
 
@@ -312,6 +312,9 @@ h1 {
 }
 .field-error {
   font-size: 0.85rem;
-  color: #c92a2a;
+  color: #ff4d4f !important;
   margin-top: 6px;
+  background: #000 !important;
+  padding: 0.4rem 0.5rem !important;
+  border-radius: 6px !important;
 }

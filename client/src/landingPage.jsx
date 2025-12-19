@@ -6,12 +6,14 @@ import Post from './samplepost.jsx';
 import { PostCreate } from './createpost.jsx';
 
 function Sidebar() {
+  const [active, setActive] = useState('Home')
+
   return (
     <aside className="sidebar">
       <nav>
         <ul>
-          <li>🏠 <span>Home</span></li>
-          <li>📢 <span>Announcements</span></li>
+          <li className={active === 'Home' ? 'active' : ''} onClick={() => setActive('Home')}>🏠 <span>Home</span></li>
+          <li className={active === 'Announcements' ? 'active' : ''} onClick={() => setActive('Announcements')}>📢 <span>Announcements</span></li>
         </ul>
       </nav>
     </aside>
@@ -34,7 +36,7 @@ function Topbar({ user, onLogout }) {
         {user ? (
           <>
             <span className="user-email">{user.email}</span>
-            <button className="logout-btn" onClick={onLogout}>Logout</button>
+            <button className="logout-btn" onClick={() => { if (window.confirm('Are you sure you want to log out?')) onLogout() }}>Logout</button>
           </>
         ) : (
           <div />

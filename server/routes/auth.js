@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const VerificationCode = require('../models/VerificationCode');
-const { sendVerificationCodeEmail, sendWelcomeEmail } = require('../services/emailService');
+const { sendVerificationCodeEmail, sendPasswordResetCodeEmail, sendWelcomeEmail } = require('../services/emailService');
 require('dotenv').config();
 
 const router = express.Router();
@@ -25,8 +25,8 @@ router.post('/send-code', async (req, res) => {
     // Generate verification code
     const code = await VerificationCode.generateCode(email);
 
-    // Send email with code
-    await sendVerificationCodeEmail(email, code);
+    // Send password-reset email with code
+    await sendPasswordResetCodeEmail(email, code);
 
     res.json({ 
       success: true, 
@@ -215,6 +215,17 @@ router.post('/forgot-password/reset', async (req, res) => {
     const isValid = await VerificationCode.verifyCode(email, code);
     if (!isValid) {
       return res.status(400).json({ message: 'Invalid or expired code' });
+    }
+
+    // Ensure the new password is not the same as the current password
+    const user = await User.getUserByEmail(email);
+    if (!user) {
+      return res.status(400).json({ message: 'Email not found' });
+    }
+
+    const isSame = await User.verifyPassword(newPassword, user.password);
+    if (isSame) {
+      return res.status(400).json({ message: 'New password must be different from the old password' });
     }
 
     // Update password
