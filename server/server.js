@@ -24,7 +24,15 @@ app.use(cors({
     // allow everything when debugging flag set
     if (process.env.ALLOW_ALL_ORIGINS === 'true') return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+      // allow exact configured origins
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+
+      // allow Vercel preview deployments (they use <name>.vercel.app)
+      try {
+        if (typeof origin === 'string' && origin.endsWith('.vercel.app')) return callback(null, true);
+      } catch (e) {
+        // ignore
+      }
 
     return callback(new Error('CORS blocked: ' + origin));
   },
