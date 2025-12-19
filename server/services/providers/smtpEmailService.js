@@ -5,22 +5,29 @@ require('dotenv').config();
 // Nodemailer transporter
 // ----------------------------
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,          // ✅ Required for Gmail on Render
-  secure: false,      // ❌ Must be false for port 587
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587,
+  secure: process.env.SMTP_SECURE === 'true' ? true : false,
   auth: {
-    user: process.env.SMTP_USER, // Gmail address
-    pass: process.env.SMTP_PASS, // Gmail App Password
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
   tls: {
-    rejectUnauthorized: false    // ✅ prevents Render TLS issues
-  }
+    // Keep false for environments where cert chain may not be available.
+    rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED === 'false' ? false : false
+  },
+  // Helpful debugging / timeouts to surface connection problems quickly
+  logger: true,
+  debug: process.env.SMTP_DEBUG === 'true',
+  connectionTimeout: process.env.SMTP_CONNECTION_TIMEOUT ? parseInt(process.env.SMTP_CONNECTION_TIMEOUT, 10) : 15000,
+  greetingTimeout: process.env.SMTP_GREETING_TIMEOUT ? parseInt(process.env.SMTP_GREETING_TIMEOUT, 10) : 15000,
+  socketTimeout: process.env.SMTP_SOCKET_TIMEOUT ? parseInt(process.env.SMTP_SOCKET_TIMEOUT, 10) : 15000,
 });
 
 // Optional: Verify connection on startup
 transporter.verify((err, success) => {
   if (err) {
-    console.error('❌ SMTP ERROR:', err);
+    console.error('❌ SMTP VERIFY ERROR:', err && err.message ? err.message : err);
   } else {
     console.log('✅ SMTP READY');
   }
@@ -50,8 +57,13 @@ async function sendVerificationCodeEmail(email, code) {
     html
   };
 
-  await transporter.sendMail(mailOptions);
-  console.log(`✓ SMTP verification code sent to ${email}`);
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`✓ SMTP verification code sent to ${email}`);
+  } catch (err) {
+    console.error('❌ SMTP SEND ERROR (verification):', err && err.code ? err.code : err.message || err);
+    throw err;
+  }
 }
 
 // ----------------------------
@@ -76,8 +88,13 @@ async function sendWelcomeEmail(email) {
     html
   };
 
-  await transporter.sendMail(mailOptions);
-  console.log(`✓ SMTP welcome email sent to ${email}`);
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`✓ SMTP welcome email sent to ${email}`);
+  } catch (err) {
+    console.error('❌ SMTP SEND ERROR (welcome):', err && err.code ? err.code : err.message || err);
+    throw err;
+  }
 }
 
 // ----------------------------
@@ -104,8 +121,13 @@ async function sendPasswordResetCodeEmail(email, code) {
     html
   };
 
-  await transporter.sendMail(mailOptions);
-  console.log(`✓ SMTP password reset code sent to ${email}`);
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`✓ SMTP password reset code sent to ${email}`);
+  } catch (err) {
+    console.error('❌ SMTP SEND ERROR (reset):', err && err.code ? err.code : err.message || err);
+    throw err;
+  }
 }
 
 // ----------------------------
