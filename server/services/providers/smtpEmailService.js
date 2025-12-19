@@ -1,16 +1,34 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
+// ----------------------------
+// Nodemailer transporter
+// ----------------------------
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: process.env.SMTP_SECURE === 'true' || false, // true for 465, false for other ports
+  host: 'smtp.gmail.com',
+  port: 587,          // ✅ Required for Gmail on Render
+  secure: false,      // ❌ Must be false for port 587
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
+    user: process.env.SMTP_USER, // Gmail address
+    pass: process.env.SMTP_PASS, // Gmail App Password
+  },
+  tls: {
+    rejectUnauthorized: false    // ✅ prevents Render TLS issues
   }
 });
 
+// Optional: Verify connection on startup
+transporter.verify((err, success) => {
+  if (err) {
+    console.error('❌ SMTP ERROR:', err);
+  } else {
+    console.log('✅ SMTP READY');
+  }
+});
+
+// ----------------------------
+// Send verification code email
+// ----------------------------
 async function sendVerificationCodeEmail(email, code) {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     throw new Error('SMTP credentials not configured');
@@ -36,6 +54,9 @@ async function sendVerificationCodeEmail(email, code) {
   console.log(`✓ SMTP verification code sent to ${email}`);
 }
 
+// ----------------------------
+// Send welcome email
+// ----------------------------
 async function sendWelcomeEmail(email) {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     throw new Error('SMTP credentials not configured');
@@ -59,6 +80,9 @@ async function sendWelcomeEmail(email) {
   console.log(`✓ SMTP welcome email sent to ${email}`);
 }
 
+// ----------------------------
+// Send password reset code email
+// ----------------------------
 async function sendPasswordResetCodeEmail(email, code) {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     throw new Error('SMTP credentials not configured');
@@ -84,6 +108,9 @@ async function sendPasswordResetCodeEmail(email, code) {
   console.log(`✓ SMTP password reset code sent to ${email}`);
 }
 
+// ----------------------------
+// Exports
+// ----------------------------
 module.exports = {
   sendVerificationCodeEmail,
   sendPasswordResetCodeEmail,
