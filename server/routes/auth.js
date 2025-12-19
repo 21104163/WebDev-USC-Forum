@@ -2,79 +2,51 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const VerificationCode = require('../models/VerificationCode');
-const { sendVerificationCodeEmail, sendPasswordResetCodeEmail, sendWelcomeEmail } = require('../services/emailService');
+// Added testEmailConnection to the import
+const { 
+  sendVerificationCodeEmail, 
+  sendPasswordResetCodeEmail, 
+  sendWelcomeEmail,
+  testEmailConnection 
+} = require('../services/emailService');
 require('dotenv').config();
 
 const router = express.Router();
+
+// 🧪 NEW: SMTP Diagnostic Route
+// Visit: https://webdev-usc-forum.onrender.com/api/auth/test-email
+router.get('/test-email', async (req, res) => {
+  const result = await testEmailConnection();
+  if (result.success) {
+    res.json({ status: "Success", details: result.message });
+  } else {
+    // This will help us see EXACTLY why Render is blocking the email
+    res.status(500).json({ status: "Failed", error: result.error });
+  }
+});
 
 // Send verification code
 router.post('/send-code', async (req, res) => {
   try {
     const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
-    }
-
-    // Check if email is already registered
-    const existingUser = await User.userExists(email);
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email already registered' });
-    }
-
-    // Generate verification code
-    const code = await VerificationCode.generateCode(email);
-
-    // Send password-reset email with code
-    await sendPasswordResetCodeEmail(email, code);
-
-    res.json({ 
-      success: true, 
-      message: 'Verification code sent to your email' 
-    });
-  } catch (error) {
-    console.error('Error sending code:', error);
-    res.status(500).json({ message: 'Error sending verification code' });
-  }
-});
-
-// Verify code
-router.post('/verify-code', async (req, res) => {
-  try {
-    const { email, code } = req.body;
-
-    if (!email || !code) {
-      return res.status(400).json({ message: 'Email and code are required' });
-    }
-
-    // Verify the code
-    const isValid = await VerificationCode.verifyCode(email, code);
-
-    if (!isValid) {
-      return res.status(400).json({ message: 'Invalid or expired code' });
-    }
-
-    res.json({ 
-      success: true, 
-      message: 'Code verified' 
-    });
-  } catch (error) {
-    console.error('Error verifying code:', error);
-    res.status(500).json({ message: 'Error verifying code' });
-  }
-});
-
-// Check if email exists (returns { exists: true/false })
-router.get('/check-email', async (req, res) => {
-  try {
-    const email = req.query.email;
     if (!email) return res.status(400).json({ message: 'Email is required' });
 
-    const exists = await User.userExists(email);
-    res.json({ exists: !!exists });
+    const existingUser = await User.userExists(email);
+    if (existingUser) return res.status(400).json({ message: 'Email already registered' });
+
+    const code = await VerificationCode.generateCode(email);
+
+    // FIX: Using verification email for signup, not password-reset email
+    await sendVerificationCodeEmail(email, code);
+
+    res.json({ success: true, message: 'Verification code sent to your email' });
   } catch (error) {
-    console.error('Error checking email:', error);
-    res.status(500).json({ message: 'Error checking email' });
+    // Detailed logging for Render
+    console.error('CRITICAL ERROR in /send-code:', error.message);
+    res.status(500).json({ 
+      message: 'Error sending verification code', 
+      details: error.message // Sending detail back to frontend for debugging
+    });
   }
 });
 
@@ -82,36 +54,30 @@ router.get('/check-email', async (req, res) => {
 router.post('/signup', async (req, res) => {
   try {
     const { email, password, code } = req.body;
-
     if (!email || !password || !code) {
       return res.status(400).json({ message: 'Email, password, and code are required' });
     }
 
-    // Consume (verify + delete) the code for signup
     const isValid = await VerificationCode.consumeCode(email, code);
-    if (!isValid) {
-      return res.status(400).json({ message: 'Invalid or expired code' });
-    }
+    if (!isValid) return res.status(400).json({ message: 'Invalid or expired code' });
 
-    // Check if user already exists
-    if (await User.userExists(email)) {
-      return res.status(400).json({ message: 'Email already registered' });
-    }
+    if (await User.userExists(email)) return res.status(400).json({ message: 'Email already registered' });
 
-    // Create user
     const user = await User.createUser(email, password);
-
-    // Mark email as verified
     await User.updateEmailVerified(email);
 
-    // Send welcome email
-    await sendWelcomeEmail(email);
+    // Note: If this fails, the user is still created. 
+    // We wrap it in a try-catch so a welcome email failure doesn't break the whole signup.
+    try {
+      await sendWelcomeEmail(email);
+    } catch (e) {
+      console.warn("Welcome email failed to send, but user was created.");
+    }
 
-    // Generate JWT token
     const token = jwt.sign(
       { id: user.id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRE }
+      { expiresIn: process.env.JWT_EXPIRE || '24h' }
     );
 
     res.json({
@@ -121,7 +87,7 @@ router.post('/signup', async (req, res) => {
       user: { id: user.id, email: user.email }
     });
   } catch (error) {
-    console.error('Error creating account:', error);
+    console.error('Signup Error:', error);
     res.status(500).json({ message: 'Error creating account' });
   }
 });

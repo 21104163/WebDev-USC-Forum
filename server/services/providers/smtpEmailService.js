@@ -5,33 +5,41 @@ require('dotenv').config();
 // Nodemailer transporter
 // ----------------------------
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587,
-  secure: process.env.SMTP_SECURE === 'true' ? true : false,
+  service: 'gmail', // Shortcut for Gmail (sets host/port automatically)
   auth: {
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    pass: process.env.SMTP_PASS, // Your 16-character App Password
   },
   tls: {
-    // Keep false for environments where cert chain may not be available.
-    rejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED === 'false' ? false : false
+    // Required for Render's networking environment
+    rejectUnauthorized: false 
   },
-  // Helpful debugging / timeouts to surface connection problems quickly
+  // Increased timeouts for stable handshakes in production
+  connectionTimeout: 20000, 
+  greetingTimeout: 20000,
+  socketTimeout: 30000,
   logger: true,
-  debug: process.env.SMTP_DEBUG === 'true',
-  connectionTimeout: process.env.SMTP_CONNECTION_TIMEOUT ? parseInt(process.env.SMTP_CONNECTION_TIMEOUT, 10) : 15000,
-  greetingTimeout: process.env.SMTP_GREETING_TIMEOUT ? parseInt(process.env.SMTP_GREETING_TIMEOUT, 10) : 15000,
-  socketTimeout: process.env.SMTP_SOCKET_TIMEOUT ? parseInt(process.env.SMTP_SOCKET_TIMEOUT, 10) : 15000,
+  debug: true
 });
 
-// Optional: Verify connection on startup
+// Verify connection on startup
 transporter.verify((err, success) => {
   if (err) {
-    console.error('❌ SMTP VERIFY ERROR:', err && err.message ? err.message : err);
+    console.error('❌ SMTP VERIFY ERROR:', err.message);
   } else {
-    console.log('✅ SMTP READY');
+    console.log('✅ SMTP READY - Connection Established');
   }
 });
+
+// NEW: Connection Test Function
+async function testEmailConnection() {
+  try {
+    await transporter.verify();
+    return { success: true, message: "SMTP is connected and ready" };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
 
 // ----------------------------
 // Send verification code email
@@ -136,5 +144,6 @@ async function sendPasswordResetCodeEmail(email, code) {
 module.exports = {
   sendVerificationCodeEmail,
   sendPasswordResetCodeEmail,
-  sendWelcomeEmail
+  sendWelcomeEmail,
+  testEmailConnection // Added to exports
 };
