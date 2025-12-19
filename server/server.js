@@ -15,7 +15,14 @@ const allowedOrigins = [
 // CORS middleware (ONLY ONCE)
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // allow Postman / curl
+    // Log origin for debugging CORS issues
+    console.log('CORS request origin:', origin);
+
+    // allow Postman / curl (no origin)
+    if (!origin) return callback(null, true);
+
+    // allow everything when debugging flag set
+    if (process.env.ALLOW_ALL_ORIGINS === 'true') return callback(null, true);
 
     if (allowedOrigins.includes(origin)) return callback(null, true);
 
@@ -41,6 +48,14 @@ app.get('/', (req, res) => res.json({ message: 'USC Forum API running' }));
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
+  // Ensure CORS headers are present even on errors so browser can read response
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  }
   res.status(500).json({ message: 'Internal server error' });
 });
 
