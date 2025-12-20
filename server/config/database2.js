@@ -61,7 +61,7 @@ async function initializeDatabase() {
         user_id INT NOT NULL,
         content TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (post_id) REFERENCES POSTS(post_id) ON DELETE CASCADE,
+        FOREIGN KEY (post_id) REFERENCES POSTS(post_id) ON DELETE CASCADE
       );
     `);
 
