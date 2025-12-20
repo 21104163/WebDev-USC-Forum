@@ -68,7 +68,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Internal server error' });
 });
 
-app.get('/debug/tables', async (req, res) => {
+app.get('/tables', async (req, res) => {
   try {
     const [tables] = await db2.query('SHOW TABLES');
     res.json(tables);
@@ -82,3 +82,42 @@ app.get('/debug/tables', async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✓ API running on http://localhost:${PORT}`));
+
+// --- User migration from DB1 to DB2 ---
+(async function migrateUsers() {
+  try {
+    console.log('🚀 Starting user migration from DB1 to DB2');
+
+    // Step 1: fetch all users from DB1
+    const db1 = require('./database');      // your existing db1 pool
+    const db2 = require('./database2');      // your existing db2 pool
+    const [users] = await db1.query('SELECT * FROM users');
+    console.log(`Found ${users.length} users in DB1`);
+
+    // Step 2: insert users into DB2
+    for (const user of users) {
+      await db2.query(
+        `INSERT INTO users (id, email, password, email_verified, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE
+           email = VALUES(email),
+           password = VALUES(password),
+           email_verified = VALUES(email_verified),
+           updated_at = VALUES(updated_at)`,
+        [
+          user.id,
+          user.email,
+          user.password,
+          user.email_verified,
+          user.created_at,
+          user.updated_at
+        ]
+      );
+    }
+
+    console.log('✅ Users migrated to DB2 successfully');
+  } catch (err) {
+    console.error('❌ User migration failed:', err);
+  }
+})();
+

@@ -39,6 +39,17 @@ const pool = mysql.createPool({
 async function initializeDatabase() {
   const connection = await pool.getConnection();
   try {
+        await connection.query(`
+        CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        email_verified BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      );
+    `);
+
       await connection.query(`
       CREATE TABLE IF NOT EXISTS POSTS (
         post_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -73,7 +84,7 @@ async function initializeDatabase() {
       }
     }
 
-    console.log('✓ Database tables initialized');
+    console.log(' Database tables initialized');
   } catch (error) {
     console.error('Database initialization error:', error);
   } finally {
