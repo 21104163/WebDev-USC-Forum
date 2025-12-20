@@ -48,7 +48,7 @@ async function initializeDatabase() {
         authorName VARCHAR(255),
         avatar VARCHAR(255),
         numLikes INT DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
