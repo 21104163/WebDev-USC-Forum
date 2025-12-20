@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
+
 export function PostCreate() {
   const token = localStorage.getItem('token');
   if (!token) return null; // Don't render form if not logged in
@@ -16,7 +18,7 @@ export function PostCreate() {
 
     // Example: send to server
     try {
-      const res = await fetch('/api/posts', {
+      const res = await fetch(`${API_BASE}/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
