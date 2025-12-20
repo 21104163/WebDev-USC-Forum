@@ -2,7 +2,7 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 // Use DATABASE_URL (optional) OR individual vars
-const connectionConfig = process.env.DATABASE_URL2 || {
+const connectionConfig = process.env.DATABASE_URL || {
   host: process.env.DB_HOST2,
   user: process.env.DB_USER2,
   password: process.env.DB_PASSWORD2 || '',
