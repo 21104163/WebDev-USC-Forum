@@ -7,7 +7,7 @@ function PostCard({ title, body, avatar, authorName, likes, comments }) {
       <div className="post-header">
         <div className="avatar"><img src={avatar} alt="Avatar" /></div>
         <div className="meta">
-          <div className="author">{authorName} · {authorTag}</div>
+          <div className="author">{authorName}</div>
           <h4>{title}</h4>
         </div>
       </div>
@@ -22,6 +22,7 @@ function PostCard({ title, body, avatar, authorName, likes, comments }) {
     </article>
   );
 }
+
 export default function GenPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,11 +44,11 @@ export default function GenPosts() {
           ? data.map(post => ({
               ...post,
               avatar: post.avatar || '/default-avatar.png',
-              authorName: post.authorName || `User ${post.author_id || 'Unknown'}`,
-              likes: typeof post.numLikes === 'number' ? post.likes : 0,
+              authorName: post.authorName || `User ${post.user_id || 'Unknown'}`,
+              likes: typeof post.numLikes === 'number' ? post.numLikes : 0,
               commentsCount: Array.isArray(post.comments)
                 ? post.comments.length
-                : post.commentsCount || 0,
+                : post.numComments || 0,
             }))
           : [];
 
@@ -76,7 +77,7 @@ export default function GenPosts() {
           body={post.body || post.content}
           avatar={post.avatar}
           authorName={post.authorName}
-          likes={post.numLikes}
+          likes={post.likes}
           comments={post.commentsCount}
         />
       ))}

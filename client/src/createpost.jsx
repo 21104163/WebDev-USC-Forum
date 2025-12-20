@@ -1,29 +1,55 @@
-function submitPost(event) {
-    event.preventDefault();
-    const username = "Manana"//sessionStorage.getItem('userID');
-    //sample code to get form data
+import { useState } from 'react';
 
-    const title = document.getElementById('title').value;
-    const content = document.getElementById('content').value;
-    console.log('Post submitted:', { username, title, content });
-
-    // Here you would typically send the post data to the server
-    document.getElementById('postForm').reset();
-}
 export function PostCreate() {
-    if (!localStorage.getItem('token')) {
-        return null; // Don't render the post creation form if not logged in
+  const token = localStorage.getItem('token');
+  if (!token) return null; // Don't render form if not logged in
+
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userId = user ? user.id : null;
+
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+
+  async function submitPost(event) {
+    event.preventDefault();
+    console.log('Post submitted:', { userId, title, content });
+
+    // Example: send to server
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, title, content }),
+      });
+
+      if (!res.ok) throw new Error('Failed to create post');
+      const data = await res.json();
+      console.log('Post saved:', data);
+
+      // Reset form
+      setTitle('');
+      setContent('');
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
     }
-    return (
+  }
+
+  return (
     <div className="card post">
-        <h2>Create Post</h2>
-        <form action ="" className = "post-form" id="postForm">
-            <label for="title">Title:</label>
-            <input type ="text" placeholder="Post Title" id="title" maxLength={100}/>
-            <label for="content">Content:</label>
-            <textarea placeholder="What's on your mind?" id ="content" rows ={4} maxLength={256}/>
-            <button type="submit" onClick={submitPost}>Post</button>
-        </form>
+      <h2>Create Post</h2>
+      <form className="post-form" onSubmit={submitPost}>
+        <label htmlFor="title">Title:</label>
+        <input type="text" placeholder="Post Title" id="title" maxLength={100} value={title} onChange={(e) => setTitle(e.target.value)} />
+        <label htmlFor="content">Content:</label>
+        <textarea
+          placeholder="What's on your mind?" id="content" rows={4} maxLength={256} value={content} onChange={(e) => setContent(e.target.value)}
+        />
+        <button type="submit">Post</button>
+      </form>
     </div>
-    );
+  );
 }

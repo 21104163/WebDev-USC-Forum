@@ -86,11 +86,11 @@ app.listen(PORT, () => console.log(`✓ API running on http://localhost:${PORT}`
 // --- User migration from DB1 to DB2 ---
 (async function migrateUsers() {
   try {
-    console.log('🚀 Starting user migration from DB1 to DB2');
+    console.log(' Starting user migration from DB1 to DB2');
 
     // Step 1: fetch all users from DB1
-    const db1 = require('./config/database');      // your existing db1 pool
-    const db2 = require('./config/database2');      // your existing db2 pool
+    const db1 = require('./config/database');      
+    const db2 = require('./config/database2');     
     const [users] = await db1.query('SELECT * FROM users');
     console.log(`Found ${users.length} users in DB1`);
 
@@ -103,6 +103,7 @@ app.listen(PORT, () => console.log(`✓ API running on http://localhost:${PORT}`
            email = VALUES(email),
            password = VALUES(password),
            email_verified = VALUES(email_verified),
+           created_at = VALUES(created_at),
            updated_at = VALUES(updated_at)`,
         [
           user.id,

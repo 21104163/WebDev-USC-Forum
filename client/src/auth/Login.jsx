@@ -32,6 +32,7 @@ export default function Login({ onLogin, onShowSignup, onShowForgot }) {
       try { data = text ? JSON.parse(text) : null } catch (e) { data = null }
       if (!res.ok) throw new Error((data && data.message) || text || 'Login failed')
       localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
       onLogin(data.user)
     } catch (err) {
       setError(err.message)
