@@ -3,9 +3,16 @@ import ConfirmModal from './components/ConfirmModal'
 import { useState } from "react";
 import uscLogo from './assets/USC_university_seal.svg.png';
 import { Header } from './header.jsx';
-import Post from './samplepost.jsx';
+import  GenPosts  from './samplepost.jsx';
 import { PostCreate } from './createpost.jsx';
 
+function genPosts() {
+  const posts = [];
+  for (let i = 1; i <= 10; i++) {
+    posts.push(<PostCard postid={i} />);
+  }
+  return posts;
+}
 function Sidebar() {
   const [active, setActive] = useState('Home')
 
@@ -88,9 +95,7 @@ export default function LandingPage({ user, onLogout }) {
           <div className="content">
             <div className="feed">
               <PostCreate />
-              <Post postid={1} />
-              <Post postid={2} />
-              <Post postid={3} />
+              <GenPosts />
             </div>
             <RightSidebar />
           </div>

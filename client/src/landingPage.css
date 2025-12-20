@@ -3,6 +3,8 @@
 ------------------------------------------------------- */
 #app-root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  justify-content: center;
 }
 
 body {
@@ -46,6 +48,7 @@ body {
   background: #174c3b; /* restored original darker green */
   color: #fff;
   padding: 0.6rem 1rem; /* reduce overall padding so nav is closer to header */
+  padding-right: 0.5rem;
   box-shadow: 2px 0 0 rgba(0,0,0,0.04) inset;
   padding-top: 0.5rem; /* small top padding to sit near header */
 }
@@ -124,7 +127,8 @@ body {
   width: 100%;
   margin: 0 auto;
   padding: 0 1rem;
-  margin-left: 20%;
+  padding-right: 5.5rem;
+  margin-left: 0%;
   margin-top: calc(120px + 1rem);
 }
 
