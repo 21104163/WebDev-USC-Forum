@@ -74,19 +74,6 @@ async function initializeDatabase() {
   }
 }
 // Example query function
-const express = require('express');
-const router = express.Router();
-router.get('/posts', async (req, res) => {
-  try {
-    const [rows] = await db.execute(
-      'SHOW TABLES'
-    );
-    res.json(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Database error' });
-  }
-});
 
 initializeDatabase().catch(console.error);
 
