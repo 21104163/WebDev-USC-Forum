@@ -79,7 +79,7 @@ const router = express.Router();
 router.get('/posts', async (req, res) => {
   try {
     const [rows] = await db.execute(
-      'SELECT post_id, user_id, title, content, numLikes, numComments FROM posts'
+      'SHOW TABLES'
     );
     res.json(rows);
   } catch (err) {
