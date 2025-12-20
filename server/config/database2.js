@@ -30,37 +30,30 @@ const pool = mysql.createPool({
 async function initializeDatabase() {
   const connection = await pool.getConnection();
   try {
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        email_verified BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      );
-    `);
-
-
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS verification_codes (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        email VARCHAR(255) NOT NULL,
-        code VARCHAR(6) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        expires_at DATETIME NOT NULL
-      );
-    `);
-
       await connection.query(`
       CREATE TABLE IF NOT EXISTS POSTS (
         post_id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
         title VARCHAR(255) NOT NULL,
         content TEXT NOT NULL,
+        authorName VARCHAR(255),
+        avatar VARCHAR(255),
         numLikes INT DEFAULT 0,
-        numComments INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      );
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS COMMENTS (
+        comment_id INT AUTO_INCREMENT PRIMARY KEY,
+        post_id INT NOT NULL,
+        AUTHOR_NAME VARCHAR(255),
+        avatar VARCHAR(255),
+        user_id INT NOT NULL,
+        content TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (post_id) REFERENCES POSTS(post_id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
@@ -80,6 +73,20 @@ async function initializeDatabase() {
     connection.release();
   }
 }
+// Example query function
+const express = require('express');
+const router = express.Router();
+router.get('/posts', async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      'SELECT post_id, user_id, title, content, numLikes, numComments FROM posts'
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
 
 initializeDatabase().catch(console.error);
 

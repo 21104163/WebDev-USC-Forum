@@ -6,13 +6,6 @@ import { Header } from './header.jsx';
 import  GenPosts  from './samplepost.jsx';
 import { PostCreate } from './createpost.jsx';
 
-function genPosts() {
-  const posts = [];
-  for (let i = 1; i <= 10; i++) {
-    posts.push(<PostCard postid={i} />);
-  }
-  return posts;
-}
 function Sidebar() {
   const [active, setActive] = useState('Home')
 

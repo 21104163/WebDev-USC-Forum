@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './landingPage.css';
 
-function PostCard({ title, body, avatar, authorName, authorTag, likes, comments }) {
+function PostCard({ title, body, avatar, authorName, likes, comments }) {
   return (
     <article className="card post">
       <div className="post-header">
@@ -22,23 +22,36 @@ function PostCard({ title, body, avatar, authorName, authorTag, likes, comments 
     </article>
   );
 }
-
 export default function GenPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const API_BASE = import.meta.env.VITE_API_URL || '/api'
+  const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
   useEffect(() => {
     let mounted = true;
+
     async function fetchPosts() {
       try {
         const res = await fetch(`${API_BASE}/posts`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!mounted) return;
-        // Expecting data to be an array of post objects with fields:
-        // id, title, body, avatar, authorName, authorTag, likes, comments (array)
-        setPosts(Array.isArray(data) ? data : []);
+
+        // Map posts to ensure author info is included
+        const formattedPosts = Array.isArray(data)
+          ? data.map(post => ({
+              ...post,
+              avatar: post.avatar || '/default-avatar.png',
+              authorName: post.authorName || `User ${post.author_id || 'Unknown'}`,
+              likes: typeof post.numLikes === 'number' ? post.likes : 0,
+              commentsCount: Array.isArray(post.comments)
+                ? post.comments.length
+                : post.commentsCount || 0,
+            }))
+          : [];
+
+        setPosts(formattedPosts);
       } catch (e) {
         if (!mounted) return;
         setError(e.message);
@@ -46,6 +59,7 @@ export default function GenPosts() {
         if (mounted) setLoading(false);
       }
     }
+
     fetchPosts();
     return () => { mounted = false; };
   }, []);
@@ -57,14 +71,13 @@ export default function GenPosts() {
     <div className="posts-grid">
       {posts.map(post => (
         <PostCard
-          key={post.id}
+          key={post.post_id || post.id}
           title={post.title}
-          body={post.body}
-          avatar={post.avatar || '/default-avatar.png'}
-          authorName={post.authorName || post.author || 'Unknown'}
-          authorTag={post.authorTag || post.authorTag || ''}
-          likes={typeof post.likes === 'number' ? post.likes : 0}
-          comments={Array.isArray(post.comments) ? post.comments.length : (post.commentsCount || 0)}
+          body={post.body || post.content}
+          avatar={post.avatar}
+          authorName={post.authorName}
+          likes={post.numLikes}
+          comments={post.commentsCount}
         />
       ))}
     </div>
