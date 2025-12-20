@@ -2,12 +2,12 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 // Use DATABASE_URL (optional) OR individual vars
-const connectionConfig = process.env.DATABASE_URL || {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT || 3306,
+const connectionConfig = process.env.DATABASE_URL2 || {
+  host: process.env.DB_HOST2,
+  user: process.env.DB_USER2,
+  password: process.env.DB_PASSWORD2 || '',
+  database: process.env.DB_NAME2,
+  port: process.env.DB_PORT2 || 3306,
 };
 
 // Build base options
