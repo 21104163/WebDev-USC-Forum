@@ -17,7 +17,7 @@ const baseOptions =
     : { ...connectionConfig };
 
 // // ✅ Aiven requires SSL — always enable in production
-baseOptions.ssl = { rejectUnauthorized: false };
+baseOptions.ssl = { rejectUnauthorized: true };
 
 const pool = mysql.createPool({
   ...baseOptions,
@@ -25,6 +25,15 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0,
 });
+
+(async () => {
+  try {
+    const [rows] = await pool.query('SELECT 1');
+    console.log('✅ DB connected', rows);
+  } catch (err) {
+    console.error('❌ DB connection failed', err);
+  }
+})();
 
 // Initialize database and tables
 async function initializeDatabase() {
@@ -40,7 +49,6 @@ async function initializeDatabase() {
         avatar VARCHAR(255),
         numLikes INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
 
@@ -54,7 +62,6 @@ async function initializeDatabase() {
         content TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (post_id) REFERENCES POSTS(post_id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
 
