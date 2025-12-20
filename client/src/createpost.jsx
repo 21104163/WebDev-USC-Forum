@@ -11,8 +11,9 @@ function submitPost(event) {
     document.getElementById('postForm').reset();
 }
 export function PostCreate() {
-
-
+    if (!localStorage.getItem('token')) {
+        return null; // Don't render the post creation form if not logged in
+    }
     return (
     <div className="card post">
         <h2>Create Post</h2>
