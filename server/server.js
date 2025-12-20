@@ -73,8 +73,11 @@ app.get('/debug/tables', async (req, res) => {
     const [tables] = await db2.query('SHOW TABLES');
     res.json(tables);
   } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  console.error('DB query error:', err);
+  res.status(500).json({
+    error: err.message || JSON.stringify(err)
+  });
+}
 });
 
 const PORT = process.env.PORT || 5000;
