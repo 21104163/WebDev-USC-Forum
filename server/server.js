@@ -89,8 +89,8 @@ app.listen(PORT, () => console.log(`✓ API running on http://localhost:${PORT}`
     console.log('🚀 Starting user migration from DB1 to DB2');
 
     // Step 1: fetch all users from DB1
-    const db1 = require('./database');      // your existing db1 pool
-    const db2 = require('./database2');      // your existing db2 pool
+    const db1 = require('./config/database');      // your existing db1 pool
+    const db2 = require('./config/database2');      // your existing db2 pool
     const [users] = await db1.query('SELECT * FROM users');
     console.log(`Found ${users.length} users in DB1`);
 
