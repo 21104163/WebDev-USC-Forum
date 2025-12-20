@@ -17,7 +17,7 @@ const baseOptions =
     : { ...connectionConfig };
 
 // // ✅ Aiven requires SSL — always enable in production
-// baseOptions.ssl = { rejectUnauthorized: false };
+baseOptions.ssl = { rejectUnauthorized: false };
 
 const pool = mysql.createPool({
   ...baseOptions,
