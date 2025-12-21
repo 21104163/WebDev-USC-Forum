@@ -3,9 +3,6 @@
 ------------------------------------------------------- */
 #app-root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  margin-left: 20%;
-  justify-content: center;
 }
 
 body {
@@ -129,7 +126,6 @@ body {
   margin: 0 auto;
   padding: 0 1rem;
   padding-right: 5.5rem;
-  margin-left: 0%;
   margin-top: calc(120px + 1rem);
 }
 
