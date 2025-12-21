@@ -16,11 +16,18 @@ const baseOptions =
     ? { uri: connectionConfig }
     : { ...connectionConfig };
 
-// // ✅ Aiven requires SSL — always enable in production
-// baseOptions.ssl = { rejectUnauthorized: false };
+// Prepare pool options so we can optionally enable SSL for Aiven or other managed DBs.
+const poolOptions = { ...baseOptions };
+if (process.env.AIVEN === 'true' || process.env.DB_REQUIRE_SSL === 'true' || process.env.NODE_ENV === 'production') {
+  // Only set `ssl` when using object config; for URI configs, many platforms
+  // accept `?ssl=true` or similar in the URL. This is a best-effort toggle.
+  if (typeof poolOptions === 'object') {
+    poolOptions.ssl = poolOptions.ssl || { rejectUnauthorized: false };
+  }
+}
 
 const pool = mysql.createPool({
-  ...baseOptions,
+  ...poolOptions,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -41,7 +48,6 @@ async function initializeDatabase() {
       );
     `);
 
-
     await connection.query(`
       CREATE TABLE IF NOT EXISTS verification_codes (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -49,6 +55,44 @@ async function initializeDatabase() {
         code VARCHAR(6) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         expires_at DATETIME NOT NULL
+      );
+    `);
+
+      await connection.query(`
+      CREATE TABLE IF NOT EXISTS POSTS (
+        post_id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        content TEXT NOT NULL,
+        authorName VARCHAR(255),
+        avatar VARCHAR(255),
+        numLikes INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS COMMENTS (
+        comment_id INT AUTO_INCREMENT PRIMARY KEY,
+        post_id INT NOT NULL,
+        AUTHOR_NAME VARCHAR(255),
+        avatar VARCHAR(255),
+        user_id INT NOT NULL,
+        content TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (post_id) REFERENCES POSTS(post_id) ON DELETE CASCADE
+      );
+    `);
+
+    // Password history table: used to prevent reuse of recent passwords
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS password_history (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX (user_id),
+        CONSTRAINT fk_password_history_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
 
