@@ -56,8 +56,8 @@ async function initializeDatabase() {
         user_id INT NOT NULL,
         title VARCHAR(255) NOT NULL,
         content TEXT NOT NULL,
-        authorName VARCHAR(255),
-        avatar VARCHAR(255),
+        authorName VARCHAR(255) default 'Anonymous',
+        avatar VARCHAR(255) default '/default-avatar.png',
         numLikes INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
