@@ -11,71 +11,46 @@ export function PostCreate() {
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
   async function submitPost(event) {
     event.preventDefault();
-    setError('');
-    setLoading(true);
-    
     console.log('Post submitted:', { userId, title, content });
 
+    // Example: send to server
     try {
-      const res = await fetch(`${API_BASE}/api/posts`, {
+      const res = await fetch(`${API_BASE}/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, content }),
+        body: JSON.stringify({ userId, title, content }),
       });
 
+      if (!res.ok) throw new Error('Failed to create post');
       const data = await res.json();
-      
-      if (!res.ok) throw new Error(data.message || 'Failed to create post');
-      
       console.log('Post saved:', data);
 
       // Reset form
       setTitle('');
       setContent('');
-      alert('Post created successfully!');
     } catch (err) {
       console.error(err);
-      setError(err.message);
       alert(err.message);
-    } finally {
-      setLoading(false);
     }
   }
 
   return (
     <div className="card post">
       <h2>Create Post</h2>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
       <form className="post-form" onSubmit={submitPost}>
         <label htmlFor="title">Title:</label>
-        <input 
-          type="text" 
-          placeholder="Post Title" 
-          id="title" 
-          maxLength={100} 
-          value={title} 
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+        <input type="text" placeholder="Post Title" id="title" maxLength={100} value={title} onChange={(e) => setTitle(e.target.value)} />
         <label htmlFor="content">Content:</label>
         <textarea
-          placeholder="What's on your mind?" 
-          id="content" 
-          rows={4} 
-          maxLength={256} 
-          value={content} 
-          onChange={(e) => setContent(e.target.value)}
-          required
+          placeholder="What's on your mind?" id="content" rows={4} maxLength={256} value={content} onChange={(e) => setContent(e.target.value)}
         />
-        <button type="submit" disabled={loading}>{loading ? 'Posting...' : 'Post'}</button>
+        <button type="submit">Post</button>
       </form>
     </div>
   );

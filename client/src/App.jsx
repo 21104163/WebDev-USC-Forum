@@ -23,7 +23,6 @@ function App() {
 
   function handleLogout() {
     localStorage.removeItem('token')
-    localStorage.removeItem('user')
     setUser(null)
     setView('login')
   }
