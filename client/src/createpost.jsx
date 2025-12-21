@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 const API_BASE = 'https://webdev-usc-forum-dntk.onrender.com' || '/api'
-//test
+
 export function PostCreate() {
   const token = localStorage.getItem('token');
   if (!token) return null; // Don't render form if not logged in
