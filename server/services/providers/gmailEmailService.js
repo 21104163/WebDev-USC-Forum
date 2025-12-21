@@ -1,5 +1,4 @@
 const { google } = require('googleapis');
-const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const oauth2Client = new google.auth.OAuth2(
@@ -18,28 +17,7 @@ oauth2Client.setCredentials({
 const SENDING_EMAIL = process.env.GMAIL_USER || process.env.GOOGLE_USER || process.env.EMAIL_USER || null;
 const DEFAULT_FROM = process.env.EMAIL_FROM || `USC Forum <${SENDING_EMAIL || 'noreply@uscforum.com'}>`;
 
-// Nodemailer transporter using OAuth2 (XOAUTH2)
-let transporter = null;
-async function getTransporter() {
-  if (transporter) return transporter;
-  const sendingUser = SENDING_EMAIL || process.env.GMAIL_USER || process.env.GOOGLE_USER || process.env.EMAIL_USER;
-  const accessTokenObj = await oauth2Client.getAccessToken();
-  const accessToken = accessTokenObj && accessTokenObj.token ? accessTokenObj.token : null;
-
-  transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      type: 'OAuth2',
-      user: sendingUser,
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-      accessToken
-    }
-  });
-
-  return transporter;
-}
+const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
 // Send verification code email
 async function sendVerificationCodeEmail(email, code) {
@@ -54,15 +32,18 @@ async function sendVerificationCodeEmail(email, code) {
     `;
 
     const fromHeader = DEFAULT_FROM;
-    const mailOptions = {
-      from: fromHeader,
-      to: email,
-      subject: 'USC Forum - Verification Code',
-      html: message
-    };
+    const emailContent = `From: ${fromHeader}\r\nTo: ${email}\r\nSubject: USC Forum - Verification Code\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n${message}`;
 
-    const t = await getTransporter();
-    await t.sendMail(mailOptions);
+    const encodedMessage = Buffer.from(emailContent)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: { raw: encodedMessage }
+    });
 
     console.log(`✓ Verification code sent to ${email}`);
     return true;
@@ -83,15 +64,18 @@ async function sendWelcomeEmail(email) {
     `;
 
     const fromHeader = DEFAULT_FROM;
-    const mailOptions = {
-      from: fromHeader,
-      to: email,
-      subject: 'Welcome to USC Forum',
-      html: message
-    };
+    const emailContent = `From: ${fromHeader}\r\nTo: ${email}\r\nSubject: Welcome to USC Forum\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n${message}`;
 
-    const t = await getTransporter();
-    await t.sendMail(mailOptions);
+    const encodedMessage = Buffer.from(emailContent)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: { raw: encodedMessage }
+    });
 
     console.log(`✓ Welcome email sent to ${email}`);
     return true;
@@ -114,15 +98,18 @@ async function sendPasswordResetCodeEmail(email, code) {
     `;
 
     const fromHeader = DEFAULT_FROM;
-    const mailOptions = {
-      from: fromHeader,
-      to: email,
-      subject: 'USC Forum - Password Reset Code',
-      html: message
-    };
+    const emailContent = `From: ${fromHeader}\r\nTo: ${email}\r\nSubject: USC Forum - Password Reset Code\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n${message}`;
 
-    const t = await getTransporter();
-    await t.sendMail(mailOptions);
+    const encodedMessage = Buffer.from(emailContent)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: { raw: encodedMessage }
+    });
 
     console.log(`✓ Password reset code sent to ${email}`);
     return true;
@@ -135,17 +122,9 @@ async function sendPasswordResetCodeEmail(email, code) {
 // Test connection / authentication with Gmail OAuth2 transporter
 async function testEmailConnection() {
   try {
-    const t = await getTransporter();
-    await t.verify();
-    // Try to get profile for nicer message (non-fatal)
-    try {
-      const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
-      const profile = await gmail.users.getProfile({ userId: 'me' });
-      const addr = (profile && profile.data && profile.data.emailAddress) || SENDING_EMAIL;
-      return { success: true, message: `SMTP OAuth2 transporter verified as ${addr}` };
-    } catch (e) {
-      return { success: true, message: 'SMTP OAuth2 transporter verified' };
-    }
+    const profile = await gmail.users.getProfile({ userId: 'me' });
+    const addr = (profile && profile.data && profile.data.emailAddress) || SENDING_EMAIL;
+    return { success: true, message: `Gmail API authenticated as ${addr}` };
   } catch (err) {
     return { success: false, error: err && err.message ? err.message : String(err) };
   }

@@ -1,15 +1,10 @@
-// SMTP-based provider has been removed per project policy.
-// This file is intentionally stubbed so any accidental imports immediately
-// surface a clear error message.
-require('dotenv').config();
-
-function _throwRemoved() {
-  throw new Error('SMTP provider removed. Use Gmail OAuth2 provider instead (set EMAIL_PROVIDER to "gmail").');
-}
+// This file remains to avoid breaking imports but is inactive.
+// SMTP usage is discouraged in this deployment (may be blocked by host).
+// All emailing should use the Gmail OAuth2 provider (`gmailEmailService`).
 
 module.exports = {
-  sendVerificationCodeEmail: async () => { _throwRemoved(); },
-  sendPasswordResetCodeEmail: async () => { _throwRemoved(); },
-  sendWelcomeEmail: async () => { _throwRemoved(); },
-  testEmailConnection: async () => { _throwRemoved(); }
+  sendVerificationCodeEmail: async () => { throw new Error('SMTP provider disabled; use Gmail OAuth2 provider.'); },
+  sendPasswordResetCodeEmail: async () => { throw new Error('SMTP provider disabled; use Gmail OAuth2 provider.'); },
+  sendWelcomeEmail: async () => { throw new Error('SMTP provider disabled; use Gmail OAuth2 provider.'); },
+  testEmailConnection: async () => { throw new Error('SMTP provider disabled; use Gmail OAuth2 provider.'); }
 };
