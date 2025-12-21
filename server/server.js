@@ -42,7 +42,16 @@ app.use(cors({
 }));
 
 // Handle preflight
-app.options('/*', cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (process.env.ALLOW_ALL_ORIGINS === 'true') return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (origin.endsWith('.vercel.app')) return callback(null, true);
+    return callback(new Error('CORS blocked'));
+  },
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
