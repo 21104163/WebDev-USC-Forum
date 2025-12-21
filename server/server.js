@@ -82,8 +82,10 @@ app.post('/posts', async (req, res) => {
   try {
     const { userId, title, content } = req.body;
     
+    console.log('POST /posts received:', { userId, title, content });
+    
     if (!userId || !title || !content) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ error: 'Missing required fields: userId, title, content' });
     }
 
     const [result] = await db2.query(
@@ -91,6 +93,8 @@ app.post('/posts', async (req, res) => {
       [userId, title, content]
     );
 
+    console.log('Post inserted successfully:', result);
+    
     res.status(201).json({ 
       id: result.insertId, 
       userId, 
@@ -99,9 +103,11 @@ app.post('/posts', async (req, res) => {
       message: 'Post created successfully'
     });
   } catch (err) {
-    console.error('DB query error:', err);
+    console.error('❌ POST /posts error:', err.message);
+    console.error('Full error:', err);
     res.status(500).json({
-      error: err.message || JSON.stringify(err)
+      error: err.message || 'Database error',
+      details: err.code || err.sqlState
     });
   }
 });
@@ -121,44 +127,63 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✓ API running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`✓ API running on http://localhost:${PORT}`);
+  
+  // Run migration after server starts (with delay to ensure DB connections are ready)
+  setTimeout(() => {
+    migrateUsers();
+  }, 2000);
+});
 
 // --- User migration from DB1 to DB2 ---
-(async function migrateUsers() {
+async function migrateUsers() {
   try {
-    console.log(' Starting user migration from DB1 to DB2');
+    console.log('🔄 Starting user migration from DB1 to DB2');
 
+    // Use the db1 from top-level require
+    const db1 = require('./config/database');
+    
     // Step 1: fetch all users from DB1
-    const db1 = require('./config/database');      
-    const db2 = require('./config/database2');     
     const [users] = await db1.query('SELECT * FROM users');
     console.log(`Found ${users.length} users in DB1`);
 
+    if (users.length === 0) {
+      console.log('⚠️ No users in DB1 to migrate');
+      return;
+    }
+
     // Step 2: insert users into DB2
     for (const user of users) {
-      await db2.query(
-        `INSERT INTO users (id, email, password, email_verified, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE
-           email = VALUES(email),
-           password = VALUES(password),
-           email_verified = VALUES(email_verified),
-           created_at = VALUES(created_at),
-           updated_at = VALUES(updated_at)`,
-        [
-          user.id,
-          user.email,
-          user.password,
-          user.email_verified,
-          user.created_at,
-          user.updated_at
-        ]
-      );
+      try {
+        await db2.query(
+          `INSERT INTO users (id, email, password, email_verified, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?)
+           ON DUPLICATE KEY UPDATE
+             email = VALUES(email),
+             password = VALUES(password),
+             email_verified = VALUES(email_verified),
+             created_at = VALUES(created_at),
+             updated_at = VALUES(updated_at)`,
+          [
+            user.id,
+            user.email,
+            user.password,
+            user.email_verified || 0,
+            user.created_at,
+            user.updated_at
+          ]
+        );
+      } catch (userErr) {
+        console.error(`Error migrating user ${user.id}:`, userErr.message);
+      }
     }
 
     console.log('✅ Users migrated to DB2 successfully');
   } catch (err) {
-    console.error('❌ User migration failed:', err);
+    console.error('❌ User migration failed:', err.message);
+    console.error('Code:', err.code);
   }
-})();
+}
 
+/*DB1====================================================*/
