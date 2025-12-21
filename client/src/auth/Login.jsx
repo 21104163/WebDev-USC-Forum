@@ -11,6 +11,7 @@ export default function Login({ onLogin, onShowSignup, onShowForgot }) {
   const [info, setInfo] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
