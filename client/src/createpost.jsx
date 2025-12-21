@@ -1,13 +1,10 @@
 import { useState } from 'react';
 
-const API_BASE = 'https://webdev-usc-forum-dntk.onrender.com' || '/api'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 export function PostCreate() {
   const token = localStorage.getItem('token');
   if (!token) return null; // Don't render form if not logged in
-
-  const user = JSON.parse(localStorage.getItem('user'));
-  const userId = user ? user.id : null;
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -24,7 +21,7 @@ export function PostCreate() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ userId, title, content }),
+        body: JSON.stringify({ title, content }),
       });
 
       if (!res.ok) throw new Error('Failed to create post');
