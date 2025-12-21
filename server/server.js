@@ -82,7 +82,7 @@ app.get('/tables', async (req, res) => {
 
 app.get('/posts', async (req, res) => {
   try {
-    const [posts] = await db2.query('SELECT * FROM posts');
+    const [posts] = await db2.query('SELECT * FROM POSTS');
     res.json(posts);
   } catch (err) {
   console.error('DB query error:', err);
