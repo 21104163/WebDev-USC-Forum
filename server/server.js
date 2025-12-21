@@ -79,6 +79,18 @@ app.get('/tables', async (req, res) => {
   });
 }
 });
+app.get('/posts', async (req, res) => {
+  try {
+    const [posts] = await db2.query('SELECT * FROM POSTS');
+    res.json(posts);
+  } catch (err) {
+  console.error('DB query error:', err);
+  res.status(500).json({
+    error: err.message || JSON.stringify(err)
+  });
+}
+});
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✓ API running on http://localhost:${PORT}`));
