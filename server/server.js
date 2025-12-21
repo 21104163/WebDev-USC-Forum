@@ -54,20 +54,6 @@ app.use('/api/auth', require('./routes/auth'));
 // Basic route
 app.get('/', (req, res) => res.json({ message: 'USC Forum API running' }));
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Server error:', err);
-  // Ensure CORS headers are present even on errors so browser can read response
-  const origin = req.headers.origin;
-  if (origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  }
-  res.status(500).json({ message: 'Internal server error' });
-});
-
 app.get('/tables', async (req, res) => {
   try {
     const [tables] = await db2.query('SHOW TABLES');
@@ -79,6 +65,7 @@ app.get('/tables', async (req, res) => {
   });
 }
 });
+
 app.get('/select/posts', async (req, res) => {
   try {
     const [posts] = await db2.query('SELECT * FROM POSTS');
@@ -119,6 +106,19 @@ app.post('/posts', async (req, res) => {
   }
 });
 
+// Error handling middleware (MUST be last)
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  // Ensure CORS headers are present even on errors so browser can read response
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  }
+  res.status(500).json({ message: 'Internal server error' });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✓ API running on http://localhost:${PORT}`));
