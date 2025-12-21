@@ -11,6 +11,9 @@ export default function Login({ onLogin, onShowSignup, onShowForgot }) {
   const [info, setInfo] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  if(email=='guest@local'){
+    localStorage.clear();
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
