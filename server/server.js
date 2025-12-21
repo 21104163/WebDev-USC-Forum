@@ -127,10 +127,17 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✓ API running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`✓ API running on http://localhost:${PORT}`);
+  
+  // Run migration after server starts (with delay to ensure DB connections are ready)
+  setTimeout(() => {
+    migrateUsers();
+  }, 2000);
+});
 
 // --- User migration from DB1 to DB2 ---
-(async function migrateUsers() {
+async function migrateUsers() {
   try {
     console.log('🔄 Starting user migration from DB1 to DB2');
 
@@ -175,8 +182,8 @@ app.listen(PORT, () => console.log(`✓ API running on http://localhost:${PORT}`
     console.log('✅ Users migrated to DB2 successfully');
   } catch (err) {
     console.error('❌ User migration failed:', err.message);
-    console.error('Details:', err);
+    console.error('Code:', err.code);
   }
-})();
+}
 
 /*DB1====================================================*/
