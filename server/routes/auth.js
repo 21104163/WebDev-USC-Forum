@@ -25,6 +25,19 @@ router.get('/test-email', async (req, res) => {
   }
 });
 
+// Check email existence (used by frontend onBlur)
+router.get('/check-email', async (req, res) => {
+  try {
+    const email = req.query.email;
+    if (!email) return res.status(400).json({ message: 'Email query parameter is required' });
+    const exists = await User.userExists(email);
+    res.json({ exists });
+  } catch (err) {
+    console.error('Error in /check-email:', err);
+    res.status(500).json({ message: 'Error checking email' });
+  }
+});
+
 // Send verification code
 router.post('/send-code', async (req, res) => {
   try {
