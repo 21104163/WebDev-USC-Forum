@@ -41,4 +41,13 @@ module.exports = {
     ensureGmailAvailable();
     return gmailProvider.sendWelcomeEmail(...args);
   }
+  ,
+  testEmailConnection: async () => {
+    if (provider === 'console') return { success: true, message: 'Console provider - no network check' };
+    ensureGmailAvailable();
+    if (typeof gmailProvider.testEmailConnection === 'function') {
+      return gmailProvider.testEmailConnection();
+    }
+    return { success: false, error: 'Gmail provider does not expose testEmailConnection' };
+  }
 };

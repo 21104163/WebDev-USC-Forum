@@ -210,6 +210,17 @@ router.post('/forgot-password/reset', async (req, res) => {
       return res.status(400).json({ message: 'New password must be different from the old password' });
     }
 
+    // Ensure new password not in recent password history
+    try {
+      const inHistory = await User.isPasswordInHistory(user.id, newPassword, 5);
+      if (inHistory) {
+        return res.status(400).json({ message: 'New password must not match recent previous passwords' });
+      }
+    } catch (e) {
+      // If history check fails (e.g., table missing), log and continue to avoid blocking resets
+      console.warn('Password history check failed:', e.message);
+    }
+
     // Update password
     await User.updatePassword(email, newPassword);
 
