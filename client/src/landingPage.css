@@ -4,6 +4,7 @@
 #app-root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+  margin-left: 20%;
   justify-content: center;
 }
 
