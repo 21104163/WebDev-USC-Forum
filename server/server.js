@@ -85,6 +85,14 @@ function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
+  console.log('🔐 JWT Auth Check:', {
+    hasAuthHeader: !!authHeader,
+    hasToken: !!token,
+    jwtSecretExists: !!process.env.JWT_SECRET,
+    jwtSecretLength: process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0,
+    tokenPreview: token ? token.substring(0, 20) + '...' : 'none'
+  });
+
   if (!token) {
     return res.status(401).json({ message: 'Access token required' });
   }
@@ -92,8 +100,14 @@ function authenticateToken(req, res, next) {
   const jwt = require('jsonwebtoken');
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      return res.status(403).json({ message: 'Invalid token' });
+      console.error('❌ JWT Verification Failed:', {
+        errorName: err.name,
+        errorMessage: err.message,
+        jwtSecretSet: !!process.env.JWT_SECRET
+      });
+      return res.status(403).json({ message: 'Invalid token', error: err.message });
     }
+    console.log('✅ JWT Valid for user:', user.email);
     req.user = user;
     next();
   });
