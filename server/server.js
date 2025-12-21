@@ -79,7 +79,7 @@ app.get('/tables', async (req, res) => {
   });
 }
 });
-app.get('select/posts', async (req, res) => {
+app.get('/select/posts', async (req, res) => {
   try {
     const [posts] = await db2.query('SELECT * FROM POSTS');
     res.json(posts);
