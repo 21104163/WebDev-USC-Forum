@@ -27,13 +27,15 @@ export function PostCreate() {
         body: JSON.stringify({ userId, title, content }),
       });
 
-      if (!res.ok) throw new Error('Failed to create post');
       const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.message || 'Failed to create post');
       console.log('Post saved:', data);
 
       // Reset form
       setTitle('');
       setContent('');
+      alert('Post created successfully!');
     } catch (err) {
       console.error(err);
       alert(err.message);

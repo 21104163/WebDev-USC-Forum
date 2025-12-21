@@ -80,7 +80,27 @@ app.get('/tables', async (req, res) => {
 }
 });
 
-app.get('/posts', async (req, res) => {
+// Middleware to verify JWT token
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access token required' });
+  }
+
+  const jwt = require('jsonwebtoken');
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid token' });
+    }
+    req.user = user;
+    next();
+  });
+}
+
+// GET all posts
+app.get('/api/posts', async (req, res) => {
   try {
     const [posts] = await db2.query('SELECT * FROM POSTS');
     res.json(posts);
@@ -90,6 +110,35 @@ app.get('/posts', async (req, res) => {
     error: err.message || JSON.stringify(err)
   });
 }
+});
+
+// POST create new post
+app.post('/api/posts', authenticateToken, async (req, res) => {
+  try {
+    const { title, content } = req.body;
+    const userId = req.user.id;
+
+    if (!title || !content) {
+      return res.status(400).json({ message: 'Title and content are required' });
+    }
+
+    const result = await db2.query(
+      'INSERT INTO POSTS (user_id, title, content, created_at) VALUES (?, ?, ?, NOW())',
+      [userId, title, content]
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'Post created successfully',
+      post_id: result[0].insertId
+    });
+  } catch (err) {
+    console.error('Error creating post:', err);
+    res.status(500).json({
+      message: 'Error creating post',
+      error: err.message
+    });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
