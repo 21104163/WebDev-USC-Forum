@@ -15,7 +15,7 @@ export function PostCreate() {
   async function submitPost(event) {
     event.preventDefault();
     console.log('Post submitted:', { userId, title, content });
-
+    
     // Example: send to server
     try {
       const res = await fetch(`${API_BASE}/posts`, {

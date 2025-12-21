@@ -79,7 +79,7 @@ app.get('/tables', async (req, res) => {
   });
 }
 });
-app.get('/posts', async (req, res) => {
+app.get('select/posts', async (req, res) => {
   try {
     const [posts] = await db2.query('SELECT * FROM POSTS');
     res.json(posts);
@@ -89,6 +89,34 @@ app.get('/posts', async (req, res) => {
     error: err.message || JSON.stringify(err)
   });
 }
+});
+
+app.post('/posts', async (req, res) => {
+  try {
+    const { userId, title, content } = req.body;
+    
+    if (!userId || !title || !content) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const [result] = await db2.query(
+      'INSERT INTO POSTS (user_id, title, content, created_at) VALUES (?, ?, ?, NOW())',
+      [userId, title, content]
+    );
+
+    res.status(201).json({ 
+      id: result.insertId, 
+      userId, 
+      title, 
+      content,
+      message: 'Post created successfully'
+    });
+  } catch (err) {
+    console.error('DB query error:', err);
+    res.status(500).json({
+      error: err.message || JSON.stringify(err)
+    });
+  }
 });
 
 
