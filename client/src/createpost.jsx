@@ -3,6 +3,7 @@ import { useState } from 'react';
 const API_BASE = import.meta.env.VITE_REND_URL
 
 export function PostCreate() {
+    console.log(import.meta.env.VITE_REND_URL);
   const token = localStorage.getItem('token');
   if(!token) { 
     return <div className="card post"><h2>Please log in to create a post.</h2></div>;
@@ -41,7 +42,7 @@ export function PostCreate() {
       alert(err.message);
     }
   }
-  console.log(import.meta.env.VITE_REND_URL);
+
   return (
     <div className="card post">
       <h2>Create Post</h2>
