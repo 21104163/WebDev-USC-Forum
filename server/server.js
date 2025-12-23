@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 
 // ✅ Single database connection (Aiven MySQL)
 const db = require('./config/database');
+const db2 = require('./config/database2');
 
 const app = express();
 
