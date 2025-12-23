@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './landingPage.css';
-
+const API_BASE = process.env.REND_URL;
 function PostCard({ title, body, avatar, authorName, likes, comments }) {
   return (
     <article className="card post">
