@@ -41,7 +41,7 @@ export function PostCreate() {
       alert(err.message);
     }
   }
-
+  console.log(import.meta.env.VITE_REND_URL);
   return (
     <div className="card post">
       <h2>Create Post</h2>
