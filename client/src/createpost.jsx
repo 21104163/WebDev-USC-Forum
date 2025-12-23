@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const API_BASE = import.meta.env.VITE_REND_URL
+const API_BASE = import.meta.env.VITE_REND_URL || '/api'
 
 export function PostCreate() {
     console.log(import.meta.env.VITE_REND_URL);
