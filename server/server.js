@@ -118,7 +118,7 @@ app.get('/internal/ping', verifyInternalJwt, (req, res) => {
 // Debug: show tables
 app.get('/tables', async (req, res) => {
   try {
-    const [tables] = await db.query('SHOW TABLES');
+    const [tables] = await db2.query('SHOW TABLES');
     res.json(tables);
   } catch (err) {
     console.error('DB error:', err);
@@ -129,7 +129,7 @@ app.get('/tables', async (req, res) => {
 // Get posts
 app.get('/select/posts', async (req, res) => {
   try {
-    const [posts] = await db.query('SELECT * FROM POSTS');
+    const [posts] = await db2.query('SELECT * FROM POSTS');
     res.json(posts);
   } catch (err) {
     console.error('DB error:', err);
@@ -146,7 +146,7 @@ app.post('/posts', async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const [result] = await db.query(
+    const [result] = await  db2.query(
       'INSERT INTO POSTS (user_id, title, content, created_at) VALUES (?, ?, ?, NOW())',
       [userId, title, content]
     );
