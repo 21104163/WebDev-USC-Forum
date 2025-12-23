@@ -34,6 +34,7 @@ export default function GenPosts() {
     async function fetchPosts() {
       try {
         const API_BASE = import.meta.env.VITE_REND_URL;
+        
         const res = await fetch(`${API_BASE}/select/posts`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
