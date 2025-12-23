@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const API_BASE = process.env.REND_URL
+const API_BASE = import.meta.env.VITE_REND_URL
 
 export function PostCreate() {
   const token = localStorage.getItem('token');
