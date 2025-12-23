@@ -27,7 +27,7 @@ export default function GenPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const API_BASE = 'https://webdev-usc-forum-dntk.onrender.com';
+  const API_BASE = process.env.REND_URL;
 
   useEffect(() => {
     let mounted = true;

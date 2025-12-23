@@ -1,10 +1,12 @@
 import { useState } from 'react';
 
-const API_BASE = 'https://webdev-usc-forum-dntk.onrender.com' || '/api'
+const API_BASE = process.env.REND_URL
 
 export function PostCreate() {
   const token = localStorage.getItem('token');
-  if (!token) return null; // Don't render form if not logged in
+  if(!token) { 
+    return <div className="card post"><h2>Please log in to create a post.</h2></div>;
+  }
 
   const user = JSON.parse(localStorage.getItem('user'));
   const userId = user ? user.id : null;

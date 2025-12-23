@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 
 // ✅ Single database connection (Aiven MySQL)
 const db = require('./config/database');
@@ -56,6 +57,32 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Internal JWT secret (fallback to general JWT secret)
+const INTERNAL_JWT_SECRET = process.env.INTERNAL_JWT_SECRET || process.env.JWT_SECRET;
+
+// Middleware to verify JWTs for internal backend-to-backend communication
+function verifyInternalJwt(req, res, next) {
+  const auth = req.headers.authorization || req.headers.Authorization;
+  if (!auth || !auth.startsWith('Bearer ')) {
+    return res.status(401).json({ ok: false, error: 'Missing or malformed Authorization header' });
+  }
+
+  const token = auth.split(' ')[1];
+  if (!INTERNAL_JWT_SECRET) {
+    console.error('INTERNAL_JWT_SECRET not set');
+    return res.status(500).json({ ok: false, error: 'Server misconfiguration' });
+  }
+
+  jwt.verify(token, INTERNAL_JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ ok: false, error: 'Invalid token', details: err.message });
+    }
+    // attach decoded token for handlers
+    req.internal = decoded;
+    next();
+  });
+}
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 
@@ -63,6 +90,29 @@ app.use('/api/auth', require('./routes/auth'));
 app.get('/', (req, res) => {
   res.json({ message: 'USC Forum API running' });
 });
+
+// --- Internal endpoints for backend-to-backend checks ---
+// Simple endpoint another backend can call to validate a JWT and inspect payload
+app.post('/internal/verify-token', (req, res) => {
+  const auth = req.headers.authorization || req.headers.Authorization;
+  if (!auth || !auth.startsWith('Bearer ')) {
+    return res.status(400).json({ ok: false, error: 'Missing Authorization header' });
+  }
+
+  const token = auth.split(' ')[1];
+  if (!INTERNAL_JWT_SECRET) return res.status(500).json({ ok: false, error: 'Server misconfiguration' });
+
+  jwt.verify(token, INTERNAL_JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(401).json({ ok: false, error: 'Invalid token', details: err.message });
+    return res.json({ ok: true, payload: decoded });
+  });
+});
+
+// Protected internal route to test end-to-end communication; uses middleware
+app.get('/internal/ping', verifyInternalJwt, (req, res) => {
+  res.json({ ok: true, message: 'pong', tokenPayload: req.internal || null });
+});
+
 
 // Debug: show tables
 app.get('/tables', async (req, res) => {
@@ -76,7 +126,7 @@ app.get('/tables', async (req, res) => {
 });
 
 // Get posts
-app.get('/posts', async (req, res) => {
+app.get('/select/posts', async (req, res) => {
   try {
     const [posts] = await db.query('SELECT * FROM POSTS');
     res.json(posts);
