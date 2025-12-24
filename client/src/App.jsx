@@ -2,6 +2,7 @@
 import './App.css'
 import './auth/loginSignup.css'
 import { useState, useEffect } from 'react'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 import LandingPage from './landingPage.jsx'
 import Login from './auth/Login'
 import SignupFlow from './auth/SignupFlow'
@@ -19,16 +20,27 @@ function App() {
         const token = localStorage.getItem('token')
         if (!token) return
 
-        const res = await fetch('/api/auth/me', {
+        const res = await fetch(`${API_BASE}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` }
         })
 
-        if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
           // token invalid/expired — clear and stay on login
           localStorage.removeItem('token')
           localStorage.removeItem('user')
           setUser(null)
           setView('login')
+          return
+        }
+
+        // for other non-OK responses (5xx/network), keep optimistic state
+        if (!res.ok) {
+          console.warn('Non-auth OK response from /auth/me; keeping stored user for now', res.status)
+          const stored = localStorage.getItem('user')
+          if (stored) {
+            setUser(JSON.parse(stored))
+            setView('landing')
+          }
           return
         }
 
@@ -41,11 +53,13 @@ function App() {
         setUser(merged)
         setView('landing')
       } catch (e) {
-        console.warn('Failed to verify token on startup', e)
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        setUser(null)
-        setView('login')
+        // network error — keep optimistic state (don't clear token immediately)
+        console.warn('Network error while verifying token on startup; will keep stored user for now', e)
+        const stored = localStorage.getItem('user')
+        if (stored) {
+          setUser(JSON.parse(stored))
+          setView('landing')
+        }
       }
     }
     restore()
