@@ -54,10 +54,20 @@ export default function GenPosts() {
       const items = Array.isArray(data.posts) ? data.posts : [];
       setTotal(data.total || 0);
 
+      // try to read current user from localStorage so posts authored by the
+      // logged-in user display their email/name instead of "User <id>"
+      let storedUser = null;
+      try {
+        const u = localStorage.getItem('user');
+        if (u) storedUser = JSON.parse(u);
+      } catch (e) {
+        storedUser = null;
+      }
+
       setPosts(items.map(p => ({
         ...p,
         avatar: p.avatar || '/default-avatar.png',
-        authorName: p.authorName || `User ${p.user_id}`,
+        authorName: p.authorName || ((storedUser && Number(storedUser.id) === Number(p.user_id)) ? (storedUser.name || storedUser.email || `User ${p.user_id}`) : `User ${p.user_id}`),
         likes: p.numLikes || 0,
         commentsCount: p.numComments || 0
       })));
