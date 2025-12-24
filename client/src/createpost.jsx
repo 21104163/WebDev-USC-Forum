@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-const API_BASE2 = 'https://webdev-usc-forum-1.onrender.com' || import.meta.env.VITE_REND_URL;
+const API_BASE2 =import.meta.env.VITE_API_URL;
 
 export function PostCreate() {
-    console.log(import.meta.env.VITE_REND_URL);
+    console.log(import.meta.env.VITE_API_URL);
   const token = localStorage.getItem('token');
   if(!token) { 
     return <div className="card post"><h2>Please log in to create a post.</h2></div>;

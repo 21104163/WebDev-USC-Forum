@@ -34,7 +34,7 @@ export default function GenPosts() {
 
     async function fetchPosts() {
       try {
-        const API_BASE2 = 'https://webdev-usc-forum-1.onrender.com' || '/api';
+        const API_BASE2 = import.meta.env.VITE_API_URL || '/api';
 
         const res = await fetch(`${API_BASE2}/select/posts`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
