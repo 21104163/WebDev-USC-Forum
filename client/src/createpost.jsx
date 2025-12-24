@@ -57,32 +57,38 @@ export function PostCreate() {
 
   return (
     <div>
-      <button className="btn" onClick={() => setShowModal(true)}>Create Post</button>
+      <button className="create-btn" onClick={() => setShowModal(true)}>Create Post</button>
 
       {showModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#fff', padding: 20, borderRadius: 8, width: '90%', maxWidth: 700 }}>
-            <h2>Create Post</h2>
-            {!showConfirm ? (
-              <>
-                <label>Title:</label>
-                <input type="text" placeholder="Post Title" maxLength={100} value={title} onChange={(e) => setTitle(e.target.value)} style={{ width: '100%', marginBottom: 8 }} />
-                <label>Content:</label>
-                <textarea placeholder="What's on your mind?" rows={6} maxLength={256} value={content} onChange={(e) => setContent(e.target.value)} style={{ width: '100%', marginBottom: 12 }} />
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={() => setShowModal(false)}>Cancel</button>
-                  <button onClick={() => setShowConfirm(true)} disabled={!title.trim() || !content.trim()}>Post</button>
-                </div>
-              </>
-            ) : (
-              <>
-                <p>You're about to publish this post. Continue?</p>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={() => setShowConfirm(false)}>Back</button>
-                  <button onClick={submitPost} disabled={submitting}>{submitting ? 'Posting...' : 'Continue'}</button>
-                </div>
-              </>
-            )}
+        <div className="modal-backdrop">
+          <div className="modal">
+            <div className="modal-header">
+              <h2>Create Post</h2>
+              <button className="modal-close" onClick={() => { setShowModal(false); setShowConfirm(false); }}>✕</button>
+            </div>
+
+            <div className="modal-body">
+              {!showConfirm ? (
+                <>
+                  <label>Title:</label>
+                  <input className="modal-input" type="text" placeholder="Post Title" maxLength={100} value={title} onChange={(e) => setTitle(e.target.value)} />
+                  <label>Content:</label>
+                  <textarea className="modal-textarea" placeholder="What's on your mind?" rows={6} maxLength={256} value={content} onChange={(e) => setContent(e.target.value)} />
+                  <div className="modal-actions">
+                    <button className="btn btn-secondary" onClick={() => { setShowModal(false); setShowConfirm(false); }}>Cancel</button>
+                    <button className="btn btn-primary" onClick={() => setShowConfirm(true)} disabled={!title.trim() || !content.trim()}>Post</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p>You're about to publish this post. Continue?</p>
+                  <div className="modal-actions">
+                    <button className="btn btn-secondary" onClick={() => setShowConfirm(false)}>Back</button>
+                    <button className="btn btn-primary" onClick={submitPost} disabled={submitting}>{submitting ? 'Posting...' : 'Continue'}</button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
