@@ -322,26 +322,7 @@ body {
   font-size: larger;
 }
 /* Posts grid: center cards and keep a consistent width */
-.posts-grid{
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-  align-items:center; /* center cards so they have the same width */
-}
-
-.card.post{
-  width:100%;
-  max-width:720px; /* keep posts same width */
-  box-sizing:border-box;
-}
-
-.post-body{
-  padding:12px; /* internal padding for content */
-  background: transparent;
-  white-space: pre-wrap; /* preserve newlines */
-  word-break: break-word;
-  line-height: 1.45;
-}
+/* posts layout left as original (no forced width changes) */
 /* -------------------------------------------------------
    Responsive
 ------------------------------------------------------- */
