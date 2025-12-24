@@ -1,13 +1,36 @@
-// Reuse the primary DB pool so all tables use the same database
+const mysql = require('mysql2/promise');
 require('dotenv').config();
-const pool = require('./database');
+
+// Use DATABASE_URL (optional) OR individual vars
+const connectionConfig = process.env.DATABASE_URL2 || {
+  host: process.env.DB_HOST2,
+  user: process.env.DB_USER2,
+  password: process.env.DB_PASSWORD2 || '',
+  database: process.env.DB_NAME2,
+  port: process.env.DB_PORT2 || 3306,
+};
+// Build base options
+const baseOptions =
+  typeof connectionConfig === 'string'
+    ? { uri: connectionConfig }
+    : { ...connectionConfig };
+
+// // ✅ Aiven requires SSL — always enable in production
+baseOptions.ssl = { rejectUnauthorized: false };
+
+const pool = mysql.createPool({
+  ...baseOptions,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
 
 (async () => {
   try {
     const [rows] = await pool.query('SELECT 1');
-    console.log('✅ DB2 connected', rows);
+    console.log('✅ DB connected', rows);
   } catch (err) {
-    console.error('❌ DB2 connection failed', err);
+    console.error('❌ DB connection failed', err);
   }
 })();
 
@@ -15,8 +38,18 @@ const pool = require('./database');
 async function initializeDatabase() {
   const connection = await pool.getConnection();
   try {
-    // Create POSTS and COMMENTS tables; reuse users from main DB
-    await connection.query(`
+        await connection.query(`
+        CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        email_verified BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      );
+    `);
+
+      await connection.query(`
       CREATE TABLE IF NOT EXISTS POSTS (
         post_id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT,
@@ -25,8 +58,7 @@ async function initializeDatabase() {
         authorName VARCHAR(255) default 'Anonymous',
         avatar VARCHAR(255) default '/default-avatar.png',
         numLikes INT DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
@@ -36,7 +68,7 @@ async function initializeDatabase() {
         post_id INT NOT NULL,
         AUTHOR_NAME VARCHAR(255),
         avatar VARCHAR(255),
-        user_id INT,
+        user_id INT NOT NULL,
         content TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (post_id) REFERENCES POSTS(post_id) ON DELETE CASCADE

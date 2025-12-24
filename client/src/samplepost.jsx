@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './landingPage.css';
 
 function PostCard({ title, body, avatar, authorName, likes, comments }) {
-  console.log(import.meta.env.VITE_REND_URL)
+  console.log(import.meta.env)
   return (
     <article className="card post">
       <div className="post-header">
