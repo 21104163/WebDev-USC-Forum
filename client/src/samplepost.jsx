@@ -183,7 +183,7 @@ export default function GenPosts() {
               <PostCard
                 id={id}
                 title={post.title}
-                body={post.body}
+                body={post.content}
                 avatar={post.avatar}
                 authorName={post.authorName}
                 likes={post.likes}
