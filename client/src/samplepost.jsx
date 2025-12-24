@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './landingPage.css';
 
-function PostCard({ id, title, content, avatar, authorName, likes, comments, onLike }) {
+function PostCard({ id, title, body, avatar, authorName, likes, comments, onLike }) {
   return (
     <article className="card post">
       <div className="post-header">
@@ -14,7 +14,7 @@ function PostCard({ id, title, content, avatar, authorName, likes, comments, onL
         </div>
       </div>
 
-      <p className="post-body">{content}</p>
+      <p className="post-body">{body}</p>
 
       <div className="post-actions">
         <button onClick={() => onLike(id)}>👍 {likes}</button>
@@ -117,7 +117,7 @@ export default function GenPosts() {
               <PostCard
                 id={id}
                 title={post.title}
-                content={post.content || post.body || ''}
+                body={post.body}
                 avatar={post.avatar}
                 authorName={post.authorName}
                 likes={post.likes}
