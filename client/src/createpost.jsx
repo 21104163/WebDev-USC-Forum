@@ -60,21 +60,21 @@ export function PostCreate() {
       <button className="create-btn" onClick={() => setShowModal(true)}>Create Post</button>
 
       {showModal && (
-        <div className="modal-backdrop">
-          <div className="modal">
-            <div className="modal-header">
+        <div className="create-modal-backdrop">
+          <div className="create-modal">
+            <div className="create-modal-header">
               <h2>Create Post</h2>
-              <button className="modal-close" onClick={() => { setShowModal(false); setShowConfirm(false); }}>✕</button>
+              <button className="create-modal-close" onClick={() => { setShowModal(false); setShowConfirm(false); }}>✕</button>
             </div>
 
-            <div className="modal-body">
+            <div className="create-modal-body">
               {!showConfirm ? (
                 <>
                   <label>Title:</label>
-                  <input className="modal-input" type="text" placeholder="Post Title" maxLength={100} value={title} onChange={(e) => setTitle(e.target.value)} />
+                  <input className="create-modal-input" type="text" placeholder="Post Title" maxLength={100} value={title} onChange={(e) => setTitle(e.target.value)} />
                   <label>Content:</label>
-                  <textarea className="modal-textarea" placeholder="What's on your mind?" rows={6} maxLength={256} value={content} onChange={(e) => setContent(e.target.value)} />
-                  <div className="modal-actions">
+                  <textarea className="create-modal-textarea" placeholder="What's on your mind?" rows={6} maxLength={256} value={content} onChange={(e) => setContent(e.target.value)} />
+                  <div className="create-modal-actions">
                     <button className="btn btn-secondary" onClick={() => { setShowModal(false); setShowConfirm(false); }}>Cancel</button>
                     <button className="btn btn-primary" onClick={() => setShowConfirm(true)} disabled={!title.trim() || !content.trim()}>Post</button>
                   </div>
@@ -82,7 +82,7 @@ export function PostCreate() {
               ) : (
                 <>
                   <p>You're about to publish this post. Continue?</p>
-                  <div className="modal-actions">
+                  <div className="create-modal-actions">
                     <button className="btn btn-secondary" onClick={() => setShowConfirm(false)}>Back</button>
                     <button className="btn btn-primary" onClick={submitPost} disabled={submitting}>{submitting ? 'Posting...' : 'Continue'}</button>
                   </div>
