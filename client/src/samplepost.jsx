@@ -1,6 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import './landingPage.css';
 
+function EditForm({ post, onCancel, onSaved }) {
+  const [title, setTitle] = useState(post.title || '');
+  const [content, setContent] = useState(post.body || post.content || '');
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      const token = localStorage.getItem('token');
+      const API_BASE = import.meta.env.VITE_API_URL || '/api';
+      const res = await fetch(`${API_BASE}/posts/${post.post_id || post.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ title: title.trim(), content: content.trim() })
+      });
+      if (!res.ok) throw new Error('Save failed');
+      onSaved && onSaved();
+    } catch (e) {
+      alert(e.message || 'Failed to save post');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="edit-form card" style={{ marginTop: 8 }}>
+      <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Title" />
+      <textarea value={content} onChange={e => setContent(e.target.value)} placeholder="Write your post..." rows={4} />
+      <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+        <button className="btn btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save'}</button>
+        <button className="btn btn-secondary" onClick={onCancel} disabled={saving}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
 function PostCard({ id, title, body, avatar, authorName, likes, comments, onLike, onEdit, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
   return (
@@ -189,9 +225,17 @@ export default function GenPosts() {
                 likes={post.likes}
                     comments={post.commentsCount}
                     onLike={handleLike}
-                    onEdit={() => toggleEdit(id)}
-                    onDelete={handleDeletePost}
-              />
+                    onEdit={currentUser?.id === post.user_id ? () => toggleEdit(id) : undefined}
+                    onDelete={currentUser?.id === post.user_id ? handleDeletePost : undefined}
+                  />
+
+                  {editingMap[id] && (
+                    <EditForm
+                      post={post}
+                      onCancel={() => toggleEdit(id)}
+                      onSaved={() => { toggleEdit(id); refreshPosts(); }}
+                    />
+                  )}
               
             </div>
           );
