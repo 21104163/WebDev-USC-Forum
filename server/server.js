@@ -58,6 +58,13 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Simple request logger to help debug 500s
+app.use((req, res, next) => {
+  console.log(`--> ${req.method} ${req.originalUrl}`);
+  if (Object.keys(req.body || {}).length) console.log('    body:', req.body);
+  next();
+});
+
 // Internal JWT secret (fallback to general JWT secret)
 const INTERNAL_JWT_SECRET = process.env.INTERNAL_JWT_SECRET || process.env.JWT_SECRET;
 
@@ -174,7 +181,13 @@ app.use((err, req, res, next) => {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
   }
 
-  res.status(500).json({ message: 'Internal server error' });
+  const response = { message: 'Internal server error' };
+  if (process.env.DEBUG_ERRORS === 'true') {
+    response.error = err.message;
+    response.stack = err.stack;
+  }
+
+  res.status(500).json(response);
 });
 
 const PORT = process.env.PORT || 5000;
