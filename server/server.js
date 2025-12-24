@@ -133,6 +133,17 @@ app.get('/tables', async (req, res) => {
   }
 });
 
+// Debug: list all users
+app.get('/debug/users', async (req, res) => {
+  try {
+    const [users] = await db2.query('SELECT id, email FROM users LIMIT 10');
+    res.json(users);
+  } catch (err) {
+    console.error('DB error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Get posts
 app.get('/select/posts', async (req, res) => {
   try {
