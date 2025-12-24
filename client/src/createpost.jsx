@@ -3,15 +3,18 @@ import { useState } from 'react';
 const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 export function PostCreate() {
+  console.log(import.meta.env.VITE_API_URL);
   const token = localStorage.getItem('token');
-  if (!token) return null; // Don't render form if not logged in
+  if(!token) { 
+    return <div className="card post"><h2>Please log in to create a post.</h2></div>;
+  }
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
   async function submitPost(event) {
     event.preventDefault();
-    console.log('Post submitted:', { userId, title, content });
+    console.log('Post submitted:', { title, content });
     
     // Example: send to server
     try {

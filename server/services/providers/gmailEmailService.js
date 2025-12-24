@@ -11,11 +11,14 @@ oauth2Client.setCredentials({
   refresh_token: process.env.GOOGLE_REFRESH_TOKEN
 });
 
-// Determine sending address and default From header.
-// Prefer an explicit EMAIL_FROM env var. If that's not set, use the OAuth
-// account email (GMAIL_USER) and show the friendly name 'USC Forum'.
-const SENDING_EMAIL = process.env.GMAIL_USER || process.env.GOOGLE_USER || process.env.EMAIL_USER || null;
-const DEFAULT_FROM = process.env.EMAIL_FROM || `USC Forum <${SENDING_EMAIL || 'noreply@uscforum.com'}>`;
+
+const SENDING_EMAIL = process.env.GMAIL_USER; // MUST be enadcyrus11@gmail.com
+if (!SENDING_EMAIL) {
+  throw new Error('GMAIL_USER env var is required for Gmail OAuth2');
+}
+
+const DEFAULT_FROM = `USC Forum <${SENDING_EMAIL}>`;
+
 
 const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
