@@ -4,8 +4,7 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
 // ✅ Single database connection (Aiven MySQL)
-require('./config/database');
-const db2 = require('./config/database2');
+const db = require('./config/database');
 
 const app = express();
 
@@ -43,17 +42,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Handle preflight
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (process.env.ALLOW_ALL_ORIGINS === 'true') return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    if (origin.endsWith('.vercel.app')) return callback(null, true);
-    return callback(new Error('CORS blocked'));
-  },
-  credentials: true
-}));
+// Preflight handled by the main CORS configuration above.
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -93,6 +82,9 @@ function verifyInternalJwt(req, res, next) {
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+// Posts, comments, likes routes (moved to router)
+// Mount posts, comments, likes routes under `/api` to match client requests
+app.use('/api', require('./routes/posts'));
 
 // Health check
 app.get('/', (req, res) => {
@@ -125,7 +117,7 @@ app.get('/internal/ping', verifyInternalJwt, (req, res) => {
 // Debug: show tables
 app.get('/tables', async (req, res) => {
   try {
-    const [tables] = await db2.query('SHOW TABLES');
+    const [tables] = await db.query('SHOW TABLES');
     res.json(tables);
   } catch (err) {
     console.error('DB error:', err);
@@ -136,7 +128,7 @@ app.get('/tables', async (req, res) => {
 // Debug: list all users
 app.get('/debug/users', async (req, res) => {
   try {
-    const [users] = await db2.query('SELECT id, email FROM users LIMIT 10');
+    const [users] = await db.query('SELECT id, email FROM users LIMIT 10');
     res.json(users);
   } catch (err) {
     console.error('DB error:', err);
@@ -144,43 +136,7 @@ app.get('/debug/users', async (req, res) => {
   }
 });
 
-// Get posts
-app.get('/select/posts', async (req, res) => {
-  try {
-    const [posts] = await db2.query('SELECT * FROM POSTS');
-    res.json(posts);
-  } catch (err) {
-    console.error('DB error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
 
-// Create post
-app.post('/posts', async (req, res) => {
-  try {
-    const { userId, title, content } = req.body;
-
-    if (!userId || !title || !content) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const [result] = await  db2.query(
-      'INSERT INTO POSTS (user_id, title, content, created_at) VALUES (?, ?, ?, NOW())',
-      [userId, title, content]
-    );
-
-    res.status(201).json({
-      id: result.insertId,
-      userId,
-      title,
-      content,
-      message: 'Post created successfully'
-    });
-  } catch (err) {
-    console.error('POST /posts error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // Error handler (LAST)
 app.use((err, req, res, next) => {

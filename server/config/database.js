@@ -67,7 +67,9 @@ async function initializeDatabase() {
         authorName VARCHAR(255),
         avatar VARCHAR(255),
         numLikes INT DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        CONSTRAINT fk_posts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
 
@@ -84,6 +86,28 @@ async function initializeDatabase() {
       );
     `);
 
+    // LIKES table: track which users liked which posts
+    try {
+      await connection.query(`
+        CREATE TABLE IF NOT EXISTS LIKES (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          user_id INT NOT NULL,
+          post_id INT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          UNIQUE KEY ux_likes_user_post (user_id, post_id),
+          INDEX idx_likes_post (post_id),
+          INDEX idx_likes_user (user_id),
+          CONSTRAINT fk_likes_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+          CONSTRAINT fk_likes_post FOREIGN KEY (post_id) REFERENCES POSTS(post_id) ON DELETE CASCADE
+        );
+      `);
+    } catch (err) {
+      // Ignore duplicate/key errors for idempotency; rethrow unexpected errors
+      if (!/Duplicate key name|already exists|Cannot add foreign key constraint|errno: 121/i.test(err.message)) {
+        console.warn('WARNING creating LIKES table:', err.message || err);
+      }
+    }
+
     // Password history table: used to prevent reuse of recent passwords
     await connection.query(`
       CREATE TABLE IF NOT EXISTS password_history (
@@ -95,6 +119,11 @@ async function initializeDatabase() {
         CONSTRAINT fk_password_history_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
+    // Optional one-time ALTER TABLE queries for older DBs.
+    // If you need to apply schema fixes for an existing database, add
+    // SQL statements to the `alterQueries` array below.
+    const alterQueries = [];
+
     for (const q of alterQueries) {
       try {
         await connection.query(q);
