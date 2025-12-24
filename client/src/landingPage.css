@@ -420,8 +420,8 @@ body {
   margin-top: 10px;
 }
 
-/* Modal styles for create post */
-.modal-backdrop {
+/* Modal styles for create post (scoped to avoid colliding with global .modal used by auth) */
+.create-modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.35);
@@ -433,7 +433,7 @@ body {
   -webkit-backdrop-filter: blur(4px);
 }
 
-.modal {
+.create-modal {
   background: #fff;
   width: 90%;
   max-width: 720px;
@@ -443,24 +443,24 @@ body {
   box-sizing: border-box;
 }
 
-.modal-header{
+.create-modal-header{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:12px;
 }
-.modal-close{
+.create-modal-close{
   background: transparent;
   border: none;
   font-size: 18px;
   cursor: pointer;
 }
 
-.modal-body{
+.create-modal-body{
   margin-top: 10px;
 }
 
-.modal-input, .modal-textarea{
+.create-modal-input, .create-modal-textarea{
   width:100%;
   border-radius:6px;
   border:1px solid #e6e6e6;
@@ -469,9 +469,9 @@ body {
   font-size: 14px;
 }
 
-.modal-textarea{ min-height: 120px; resize: vertical; }
+.create-modal-textarea{ min-height: 120px; resize: vertical; }
 
-.modal-actions{
+.create-modal-actions{
   display:flex;
   gap:10px;
   justify-content:flex-end;
