@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 
 // ✅ Single database connection (Aiven MySQL)
 const db = require('./config/database');
-const db2 = require('./config/database2');
 
 const app = express();
 
@@ -117,7 +116,7 @@ app.get('/internal/ping', verifyInternalJwt, (req, res) => {
 // Debug: show tables
 app.get('/tables', async (req, res) => {
   try {
-    const [tables] = await db2.query('SHOW TABLES');
+    const [tables] = await db.query('SHOW TABLES');
     res.json(tables);
   } catch (err) {
     console.error('DB error:', err);
@@ -128,7 +127,7 @@ app.get('/tables', async (req, res) => {
 // Debug: list all users
 app.get('/debug/users', async (req, res) => {
   try {
-    const [users] = await db2.query('SELECT id, email FROM users LIMIT 10');
+    const [users] = await db.query('SELECT id, email FROM users LIMIT 10');
     res.json(users);
   } catch (err) {
     console.error('DB error:', err);
