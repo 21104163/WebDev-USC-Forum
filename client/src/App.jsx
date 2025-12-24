@@ -11,6 +11,7 @@ import ForgotPassword from './auth/ForgotPassword'
 function App() {
   const [user, setUser] = useState(null)
   const [view, setView] = useState('login') // 'login' | 'signup' | 'forgot' | 'landing'
+  const [checkingAuth, setCheckingAuth] = useState(true)
 
   // On mount, verify stored token by calling server `/api/auth/me`.
   // If token is valid, set the returned user; otherwise clear storage and remain on login.
@@ -30,6 +31,7 @@ function App() {
           localStorage.removeItem('user')
           setUser(null)
           setView('login')
+          setCheckingAuth(false)
           return
         }
 
@@ -52,6 +54,7 @@ function App() {
         localStorage.setItem('user', JSON.stringify(merged))
         setUser(merged)
         setView('landing')
+        setCheckingAuth(false)
       } catch (e) {
         // network error — keep optimistic state (don't clear token immediately)
         console.warn('Network error while verifying token on startup; will keep stored user for now', e)
@@ -60,6 +63,7 @@ function App() {
           setUser(JSON.parse(stored))
           setView('landing')
         }
+        setCheckingAuth(false)
       }
     }
     restore()
@@ -80,6 +84,19 @@ function App() {
     localStorage.removeItem('user')
     setUser(null)
     setView('login')
+  }
+
+  if (checkingAuth) {
+    return (
+      <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh'}}>
+        <div className="auth-spinner" aria-label="Loading">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    )
   }
 
   if (view === 'login') {
