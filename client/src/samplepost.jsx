@@ -91,11 +91,54 @@ export default function GenPosts() {
     refreshPosts();
   }, [offset]);
 
+  // load current user from localStorage so we can mark owner's posts
+  useEffect(() => {
+    try {
+      const u = localStorage.getItem('user');
+      if (u) setCurrentUser(JSON.parse(u));
+    } catch (e) {
+      setCurrentUser(null);
+    }
+  }, []);
+
   // Listen for new posts created elsewhere and refresh
   useEffect(() => {
     function onCreated(e) {
-      // simple approach: refresh entire list
-      refreshPosts();
+      const d = e && e.detail ? e.detail : null;
+      if (!d) return refreshPosts();
+      const newId = d.post_id || d.id || null;
+      const normalized = {
+        ...d,
+        post_id: d.post_id || d.id || null,
+        body: d.body || d.content || '',
+        avatar: d.avatar || '/default-avatar.png',
+        authorName: d.authorName || `User ${d.user_id || ''}`,
+        likes: d.numLikes || d.likes || 0,
+        commentsCount: d.numComments || 0,
+        __new: true,
+      };
+
+      setPosts(prev => {
+        if (!newId) {
+          // If server didn't return an id, just refresh to avoid duplicates
+          refreshPosts();
+          return prev;
+        }
+        const exists = prev.some(p => (p.post_id || p.id) === newId);
+        if (exists) {
+          // mark existing as newCreated briefly
+          const updated = prev.map(p => ((p.post_id || p.id) === newId ? { ...p, __new: true } : p));
+          setTimeout(() => {
+            setPosts(cur => cur.map(p => ((p.post_id || p.id) === newId ? { ...p, __new: false } : p)));
+          }, 8000);
+          return updated;
+        }
+        const withNew = [normalized, ...prev];
+        setTimeout(() => {
+          setPosts(cur => cur.map(p => ((p.post_id || p.id) === newId ? { ...p, __new: false } : p)));
+        }, 8000);
+        return withNew;
+      });
     }
     window.addEventListener('postCreated', onCreated);
     return () => window.removeEventListener('postCreated', onCreated);
@@ -112,8 +155,12 @@ export default function GenPosts() {
       <div className="posts-grid">
         {posts.map(post => {
           const id = post.post_id || post.id;
+          let wrapperClass = post.__new ? 'new-created' : '';
+          if (currentUser && post.user_id && Number(post.user_id) === Number(currentUser.id)) {
+            wrapperClass = (wrapperClass ? wrapperClass + ' ' : '') + 'my-post';
+          }
           return (
-            <div key={id}>
+            <div key={id} className={wrapperClass}>
               <PostCard
                 id={id}
                 title={post.title}

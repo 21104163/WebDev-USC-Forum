@@ -32,8 +32,31 @@ export function PostCreate() {
         throw new Error(err.error || `HTTP ${res.status}`);
       }
       const data = await res.json();
-      // Let other components know a new post exists
-      window.dispatchEvent(new CustomEvent('postCreated', { detail: data }));
+      // Normalize the server response and notify listeners about the new post
+      const normalized = {
+        post_id: data.post_id || data.id || data.insertId || null,
+        user_id: data.user_id || data.userId || (data.user && data.user.id) || null,
+        title: data.title || '',
+        body: data.content || data.body || '',
+        avatar: data.avatar || null,
+        authorName: data.authorName || data.author || null,
+        numLikes: data.numLikes || data.likes || 0,
+        created_at: data.created_at || data.createdAt || new Date().toISOString(),
+        __new: true,
+      };
+      // If server didn't return a user_id, try reading current user from localStorage
+      if (!normalized.user_id) {
+        try {
+          const u = localStorage.getItem('user');
+          if (u) {
+            const parsed = JSON.parse(u);
+            if (parsed && parsed.id) normalized.user_id = parsed.id;
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+      window.dispatchEvent(new CustomEvent('postCreated', { detail: normalized }));
       // reset and close
       setTitle('');
       setContent('');

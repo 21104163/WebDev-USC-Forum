@@ -479,12 +479,43 @@ body {
 }
 
 /* Buttons */
-.btn{ padding:8px 12px; border-radius:6px; cursor:pointer; border:none; }
-.btn-primary{ background: linear-gradient(135deg,#00d084,#00a86d); color:#fff; }
-.btn-secondary{ background:transparent; border:1px solid #ccc; color:#333; }
+.btn{ padding:8px 12px; border-radius:6px; cursor:pointer; border:none; font-weight:600 }
+/* Primary buttons use site green gradient matching auth */
+.btn-primary{ background: linear-gradient(135deg,#00d084 0%,#00a86d 100%); color:#fff; box-shadow: 0 6px 12px rgba(0,208,132,0.12); }
+.btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,208,132,0.18) }
+/* Secondary: light filled with subtle border */
+.btn-secondary{ background: #fff; border:1px solid rgba(23,76,59,0.08); color:#174c3b; }
+.btn-secondary:hover{ background:#f6f9f6 }
 
-.create-btn{ background:#111827; color:#fff; padding:8px 14px; border-radius:8px; border:none; cursor:pointer; }
-.create-btn:hover{ opacity:0.95 }
+/* Create button in top-left should use site green to be visible */
+.create-btn{ background: linear-gradient(135deg,#00d084 0%,#00a86d 100%); color:#fff; padding:8px 14px; border-radius:8px; border:none; cursor:pointer; box-shadow: 0 6px 12px rgba(0,208,132,0.12); }
+.create-btn:hover{ transform: translateY(-2px); }
+
+/* Modal close button - darker icon for contrast */
+.create-modal-close{ color:#274136; font-weight:700 }
+
+/* Special styling only for newly-created posts */
+.new-created .card.post {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.new-created .card.post .post-body {
+  padding: 14px;
+  background: #fbfbfb;
+  border-radius: 6px;
+}
+
+/* Styling for posts that belong to current logged in user */
+.my-post .card.post {
+  border-left: 4px solid #00a86d;
+  box-shadow: 0 6px 18px rgba(0,168,109,0.06);
+}
+
+.my-post .card.post .post-header .author {
+  font-weight: 700;
+}
 
 /* When modal open, slightly dim page controls (optional, handled by backdrop) */
 
