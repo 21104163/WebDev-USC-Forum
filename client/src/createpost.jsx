@@ -1,33 +1,30 @@
 import { useState } from 'react';
 
-const API_BASE2 = 'https://webdev-usc-forum-1.onrender.com' || import.meta.env.VITE_REND_URL;
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
 
 export function PostCreate() {
-    console.log(import.meta.env.VITE_REND_URL);
+  console.log(import.meta.env.VITE_API_URL);
   const token = localStorage.getItem('token');
   if(!token) { 
     return <div className="card post"><h2>Please log in to create a post.</h2></div>;
   }
-
-  const user = JSON.parse(localStorage.getItem('user'));
-  const userId = user ? user.id : null;
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
   async function submitPost(event) {
     event.preventDefault();
-    console.log('Post submitted:', { userId, title, content });
+    console.log('Post submitted:', { title, content });
     
     // Example: send to server
     try {
-      const res = await fetch(`${API_BASE2}/posts`, {
+      const res = await fetch(`${API_BASE}/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ userId, title, content }),
+        body: JSON.stringify({ title, content }),
       });
 
       if (!res.ok) throw new Error('Failed to create post');
