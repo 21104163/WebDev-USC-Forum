@@ -321,6 +321,27 @@ body {
   margin-right: 1rem;
   font-size: larger;
 }
+/* Posts grid: center cards and keep a consistent width */
+.posts-grid{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  align-items:center; /* center cards so they have the same width */
+}
+
+.card.post{
+  width:100%;
+  max-width:720px; /* keep posts same width */
+  box-sizing:border-box;
+}
+
+.post-body{
+  padding:12px; /* internal padding for content */
+  background: transparent;
+  white-space: pre-wrap; /* preserve newlines */
+  word-break: break-word;
+  line-height: 1.45;
+}
 /* -------------------------------------------------------
    Responsive
 ------------------------------------------------------- */
@@ -417,4 +438,72 @@ body {
   cursor: pointer;
   margin-top: 10px;
 }
+
+/* Modal styles for create post */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal {
+  background: #fff;
+  width: 90%;
+  max-width: 720px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+.modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.modal-close{
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.modal-body{
+  margin-top: 10px;
+}
+
+.modal-input, .modal-textarea{
+  width:100%;
+  border-radius:6px;
+  border:1px solid #e6e6e6;
+  padding:8px 10px;
+  margin:6px 0 12px 0;
+  font-size: 14px;
+}
+
+.modal-textarea{ min-height: 120px; resize: vertical; }
+
+.modal-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  margin-top:6px;
+}
+
+/* Buttons */
+.btn{ padding:8px 12px; border-radius:6px; cursor:pointer; border:none; }
+.btn-primary{ background: linear-gradient(135deg,#00d084,#00a86d); color:#fff; }
+.btn-secondary{ background:transparent; border:1px solid #ccc; color:#333; }
+
+.create-btn{ background:#111827; color:#fff; padding:8px 14px; border-radius:8px; border:none; cursor:pointer; }
+.create-btn:hover{ opacity:0.95 }
+
+/* When modal open, slightly dim page controls (optional, handled by backdrop) */
 

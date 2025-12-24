@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './landingPage.css';
 
-function PostCard({ id, title, body, avatar, authorName, likes, comments, onLike }) {
+function PostCard({ id, title, content, avatar, authorName, likes, comments, onLike }) {
   return (
     <article className="card post">
       <div className="post-header">
@@ -14,7 +14,7 @@ function PostCard({ id, title, body, avatar, authorName, likes, comments, onLike
         </div>
       </div>
 
-      <p className="post-body">{body}</p>
+      <p className="post-body">{content}</p>
 
       <div className="post-actions">
         <button onClick={() => onLike(id)}>👍 {likes}</button>
@@ -91,6 +91,16 @@ export default function GenPosts() {
     refreshPosts();
   }, [offset]);
 
+  // Listen for new posts created elsewhere and refresh
+  useEffect(() => {
+    function onCreated(e) {
+      // simple approach: refresh entire list
+      refreshPosts();
+    }
+    window.addEventListener('postCreated', onCreated);
+    return () => window.removeEventListener('postCreated', onCreated);
+  }, []);
+
   if (loading) return <div>Loading posts...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -107,7 +117,7 @@ export default function GenPosts() {
               <PostCard
                 id={id}
                 title={post.title}
-                body={post.body}
+                content={post.content || post.body || ''}
                 avatar={post.avatar}
                 authorName={post.authorName}
                 likes={post.likes}
