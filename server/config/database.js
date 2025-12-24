@@ -119,6 +119,11 @@ async function initializeDatabase() {
         CONSTRAINT fk_password_history_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
+    // Optional one-time ALTER TABLE queries for older DBs.
+    // If you need to apply schema fixes for an existing database, add
+    // SQL statements to the `alterQueries` array below.
+    const alterQueries = [];
+
     for (const q of alterQueries) {
       try {
         await connection.query(q);
