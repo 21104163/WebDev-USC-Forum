@@ -95,6 +95,30 @@ async function initializeDatabase() {
         CONSTRAINT fk_password_history_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
+    for (const q of alterQueries) {
+      try {
+        await connection.query(q);
+      } catch (err) {
+        // Some MySQL versions don't support IF NOT EXISTS for ADD COLUMN.
+        // Ignore "Duplicate column" errors, warn on others.
+        if (!/Duplicate column|already exists/i.test(err.message)) {
+          console.warn('ALTER TABLE warning (ignored):', err.message);
+        }
+      }
+    }
+
+    // Ensure foreign key exists on COMMENTS.post_id -> POSTS.post_id.
+    try {
+      await connection.query(
+        'ALTER TABLE COMMENTS ADD CONSTRAINT fk_comments_post FOREIGN KEY (post_id) REFERENCES POSTS(post_id) ON DELETE CASCADE'
+      );
+    } catch (err) {
+      // Ignore errors about duplicate constraints or inability to add
+      if (!/Duplicate key name|Cannot add foreign key constraint|errno: 121/i.test(err.message)) {
+        console.warn('Foreign key creation warning (ignored):', err.message);
+      }
+    }
+
 
     try {
       await connection.query('CREATE INDEX idx_verif_email ON verification_codes(email)');
