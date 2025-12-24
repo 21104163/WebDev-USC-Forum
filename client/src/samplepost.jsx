@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import './landingPage.css';
 
-function PostCard({ id, title, body, avatar, authorName, likes, comments, onLike }) {
+function PostCard({ id, title, body, avatar, authorName, likes, comments, onLike, onEdit, onDelete }) {
+  const [showMenu, setShowMenu] = useState(false);
   return (
-    <article className="card post">
+    <article className="card post" style={{ position: 'relative' }}>
+      <button className="post-three-dot" onClick={() => setShowMenu(s => !s)} aria-label="Options">⋯</button>
+      {showMenu && (
+        <div className="post-menu">
+          {onEdit && <button onClick={() => { setShowMenu(false); onEdit(id); }}>Edit</button>}
+          {onDelete && <button onClick={() => { setShowMenu(false); onDelete(id); }}>Delete</button>}
+        </div>
+      )}
+
       <div className="post-header">
         <div className="avatar">
           <img src={avatar} alt="Avatar" />
@@ -178,27 +187,23 @@ export default function GenPosts() {
                 avatar={post.avatar}
                 authorName={post.authorName}
                 likes={post.likes}
-                comments={post.commentsCount}
-                onLike={handleLike}
+                    comments={post.commentsCount}
+                    onLike={handleLike}
+                    onEdit={() => toggleEdit(id)}
+                    onDelete={handleDeletePost}
               />
-
-              {currentUser?.id === post.user_id && (
-                <>
-                  <button onClick={() => toggleEdit(id)}>Edit</button>
-                  <button onClick={() => handleDeletePost(id)}>Delete</button>
-                </>
-              )}
+              
             </div>
           );
         })}
       </div>
 
       <div style={{ textAlign: 'center', marginTop: 12 }}>
-        <button disabled={!canPrev} onClick={() => setOffset(offset - limit)}>Prev</button>
+        {canPrev && <button onClick={() => setOffset(offset - limit)}>Prev</button>}
         <span style={{ margin: '0 10px' }}>
           {offset + 1}–{Math.min(offset + limit, total)} of {total}
         </span>
-        <button disabled={!canNext} onClick={() => setOffset(offset + limit)}>Next</button>
+        {canNext && <button onClick={() => setOffset(offset + limit)}>Next</button>}
       </div>
     </div>
   );
