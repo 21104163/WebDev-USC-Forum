@@ -83,7 +83,8 @@ function verifyInternalJwt(req, res, next) {
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 // Posts, comments, likes routes (moved to router)
-app.use('/', require('./routes/posts'));
+// Mount posts, comments, likes routes under `/api` to match client requests
+app.use('/api', require('./routes/posts'));
 
 // Health check
 app.get('/', (req, res) => {
