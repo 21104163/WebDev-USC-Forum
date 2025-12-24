@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const API_BASE = 'https://webdev-usc-forum-1.onrender.com' || '/api';
+const API_BASE2 = 'https://webdev-usc-forum-1.onrender.com' || '/api';
 
 export function PostCreate() {
     console.log(import.meta.env.VITE_REND_URL);
@@ -21,7 +21,7 @@ export function PostCreate() {
     
     // Example: send to server
     try {
-      const res = await fetch(`${API_BASE}/posts`, {
+      const res = await fetch(`${API_BASE2}/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
