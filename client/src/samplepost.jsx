@@ -91,6 +91,16 @@ export default function GenPosts() {
     refreshPosts();
   }, [offset]);
 
+  // Listen for new posts created elsewhere and refresh
+  useEffect(() => {
+    function onCreated(e) {
+      // simple approach: refresh entire list
+      refreshPosts();
+    }
+    window.addEventListener('postCreated', onCreated);
+    return () => window.removeEventListener('postCreated', onCreated);
+  }, []);
+
   if (loading) return <div>Loading posts...</div>;
   if (error) return <div>Error: {error}</div>;
 
