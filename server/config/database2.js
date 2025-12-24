@@ -52,7 +52,7 @@ async function initializeDatabase() {
       await connection.query(`
       CREATE TABLE IF NOT EXISTS POSTS (
         post_id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL,
+        user_id INT,
         title VARCHAR(255) NOT NULL,
         content TEXT NOT NULL,
         authorName VARCHAR(255) default 'Anonymous',

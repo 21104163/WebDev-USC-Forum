@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const API_BASE2 = 'https://webdev-usc-forum-1.onrender.com' || '/api';
+const API_BASE2 = 'https://webdev-usc-forum-1.onrender.com' || import.meta.env.VITE_REND_URL;
 
 export function PostCreate() {
     console.log(import.meta.env.VITE_REND_URL);
