@@ -19,7 +19,10 @@ function App() {
     async function restore() {
       try {
         const token = localStorage.getItem('token')
-        if (!token) return
+        if (!token) {
+          setCheckingAuth(false)
+          return
+        }
 
         const res = await fetch(`${API_BASE}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -43,6 +46,7 @@ function App() {
             setUser(JSON.parse(stored))
             setView('landing')
           }
+          setCheckingAuth(false)
           return
         }
 
